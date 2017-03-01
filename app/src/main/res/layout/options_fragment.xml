@@ -21,12 +21,12 @@
 
     <LinearLayout
             android:id="@+id/sound_on_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingLeft="40dp"
             android:paddingTop="40dp"
-            >
+        android:visibility="gone">
 
             <Button
                 android:id="@+id/sound_off_button"
@@ -39,12 +39,12 @@
 
     <LinearLayout
         android:id="@+id/sound_off_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingLeft="40dp"
         android:paddingTop="40dp"
-        android:visibility="gone">
+        >
 
         <Button
             android:id="@+id/sound_on_button"
@@ -52,6 +52,42 @@
             android:layout_height="75dp"
             android:textSize="40dp"
             android:text="@string/sound_on"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/music_on_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="40dp"
+        android:paddingTop="40dp"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/music_off_button"
+            android:layout_width="300dp"
+            android:layout_height="75dp"
+            android:textSize="40dp"
+            android:text="@string/music_off"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/music_off_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="40dp"
+        android:paddingTop="40dp"
+        >
+
+        <Button
+            android:id="@+id/music_on_button"
+            android:layout_width="300dp"
+            android:layout_height="75dp"
+            android:textSize="40dp"
+            android:text="@string/music_on"/>
 
     </LinearLayout>
         

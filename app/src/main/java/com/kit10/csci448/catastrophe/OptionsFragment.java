@@ -17,16 +17,20 @@ import android.widget.LinearLayout;
 //To take screenshot onClickListener to overlay options onto paused game screen.
 //http://stackoverflow.com/questions/3733988/screen-capture-in-android
 
-    //Right now, sound is initially on.
+    //Right now, sound and music are initially off.
 
 public class OptionsFragment extends Fragment {
 
     private ImageButton mPlayButton;
     private Button mSoundOnButton;
     private Button mSoundOffButton;
+    private Button mMusicOnButton;
+    private Button mMusicOffButton;
 
     private LinearLayout mSoundOnLayout;
     private LinearLayout mSoundOffLayout;
+    private LinearLayout mMusicOnLayout;
+    private LinearLayout mMusicOffLayout;
 
     public static OptionsFragment createFragment() {
         Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : new instance");
@@ -45,6 +49,8 @@ public class OptionsFragment extends Fragment {
 
         mSoundOnLayout = (LinearLayout) v.findViewById(R.id.sound_on_layout);
         mSoundOffLayout = (LinearLayout) v.findViewById(R.id.sound_off_layout);
+        mMusicOnLayout = (LinearLayout) v.findViewById(R.id.music_on_layout);
+        mMusicOffLayout = (LinearLayout) v.findViewById(R.id.music_off_layout);
 
         mPlayButton = (ImageButton) v.findViewById(R.id.play_button);
         mPlayButton.setOnClickListener(new View.OnClickListener() {
@@ -72,6 +78,26 @@ public class OptionsFragment extends Fragment {
                 Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : turning sound off");
                 mSoundOnLayout.setVisibility(View.GONE);
                 mSoundOffLayout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        mMusicOnButton = (Button) v.findViewById(R.id.music_on_button);
+        mMusicOnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : turning music on");
+                mMusicOffLayout.setVisibility(View.GONE);
+                mMusicOnLayout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        mMusicOffButton = (Button) v.findViewById(R.id.music_off_button);
+        mMusicOffButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : turning music off");
+                mMusicOnLayout.setVisibility(View.GONE);
+                mMusicOffLayout.setVisibility(View.VISIBLE);
             }
         });
 
