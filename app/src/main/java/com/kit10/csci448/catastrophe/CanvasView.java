@@ -30,6 +30,8 @@ public class CanvasView extends View {
         super(c, attrs);
         context = c;
 
+        // TODO: replace line paiting code with kitten drawing code
+
         mPath = new Path();
 
         mPaint = new Paint();

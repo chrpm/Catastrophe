@@ -32,18 +32,15 @@ public class GameFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(WelcomeActivity.LOG_TAG, "GameFragment : onCreateView");
         super.onCreate(savedInstanceState);
         View v = inflater.inflate(R.layout.activity_game, container, false);
 
         mCanvasView = (CanvasView) v.findViewById(R.id.canvas_view);
 
+        // TODO: this code temporary: please remove once this button is no longer necessary
         mClearButton = (Button) v.findViewById(R.id.clear_button);
         mClearButton.setOnClickListener(new View.OnClickListener() {
             @Override
