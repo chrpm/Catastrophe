@@ -15,7 +15,7 @@ import android.widget.ImageButton;
 
 public class WelcomeFragment extends Fragment {
 
-    private Button mStartButton;
+    private ImageButton mStartButton;
 
     public static WelcomeFragment newInstance() {
         Log.d(WelcomeActivity.LOG_TAG, "WelcomeFragment : new instance");
@@ -30,13 +30,20 @@ public class WelcomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(WelcomeActivity.LOG_TAG, "WelcomeFragment : onCreateView");
-        return super.onCreateView(inflater, container, savedInstanceState);
+        //return super.onCreateView(inflater, container, savedInstanceState);
         // TODO: create layout and implement this function
-        //View v = inflater.inflate(R.layout.fragment_welcome, container, false);
+        View v = inflater.inflate(R.layout.welcome_fragment, container, false);
 
-        //mStartButton = (ImageButton) v.findViewById(R.id.start_button);
+        mStartButton = (ImageButton) v.findViewById(R.id.start_button);
+        mStartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(WelcomeActivity.LOG_TAG, "WelcomeFragment : starting game");
+                startActivityForResult(GameActivity.newIntent(getActivity()), WelcomeActivity.REQUEST_CODE_GAME);
+            }
+        });
 
-        //return v;
+        return v;
 
     }
 }
