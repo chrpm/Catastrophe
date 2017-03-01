@@ -26,6 +26,7 @@ public class OptionsFragment extends Fragment {
     private Button mSoundOffButton;
     private Button mMusicOnButton;
     private Button mMusicOffButton;
+    private Button mQuitButton;
 
     private LinearLayout mSoundOnLayout;
     private LinearLayout mSoundOffLayout;
@@ -98,6 +99,15 @@ public class OptionsFragment extends Fragment {
                 Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : turning music off");
                 mMusicOnLayout.setVisibility(View.GONE);
                 mMusicOffLayout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        mQuitButton = (Button) v.findViewById(R.id.quit_button);
+        mQuitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : quitting");
+                //TODO: Implement quit.
             }
         });
 

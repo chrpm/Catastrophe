@@ -6,7 +6,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="75dp"
+        android:paddingTop="25dp"
         android:layout_gravity="center"
         android:orientation="vertical"
         android:weightSum="1">
@@ -20,20 +20,20 @@
     </LinearLayout>
 
     <LinearLayout
-            android:id="@+id/sound_on_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingLeft="40dp"
-            android:paddingTop="40dp"
+        android:id="@+id/sound_on_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:paddingTop="40dp"
         android:visibility="gone">
 
-            <Button
-                android:id="@+id/sound_off_button"
-                android:layout_width="300dp"
-                android:layout_height="75dp"
-                android:textSize="40dp"
-                android:text="@string/sound_off"/>
+        <Button
+            android:id="@+id/sound_off_button"
+            android:layout_width="300dp"
+            android:layout_height="75dp"
+            android:textSize="40dp"
+            android:text="@string/sound_off"/>
 
     </LinearLayout>
 
@@ -42,8 +42,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingLeft="40dp"
-        android:paddingTop="40dp"
+        android:layout_gravity="center"
+        android:paddingTop="30dp"
         >
 
         <Button
@@ -60,8 +60,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingLeft="40dp"
-        android:paddingTop="40dp"
+        android:layout_gravity="center"
+        android:paddingTop="30dp"
         android:visibility="gone">
 
         <Button
@@ -78,8 +78,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingLeft="40dp"
-        android:paddingTop="40dp"
+        android:layout_gravity="center"
+        android:paddingTop="30dp"
         >
 
         <Button
@@ -90,7 +90,23 @@
             android:text="@string/music_on"/>
 
     </LinearLayout>
-        
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="30dp"
+        android:layout_gravity="center"
+        >
+
+        <Button
+            android:id="@+id/quit_button"
+            android:layout_width="200dp"
+            android:layout_height="75dp"
+            android:textSize="40dp"
+            android:text="@string/quit_button"/>
+
+    </LinearLayout>
 
 
 </LinearLayout>

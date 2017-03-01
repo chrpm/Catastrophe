@@ -8,4 +8,5 @@
     <string name="sound_off">SOUND : OFF</string>
     <string name="music_on">MUSIC : ON</string>
     <string name="music_off">MUSIC : OFF</string>
+    <string name="quit_button">QUIT</string>
 </resources>
