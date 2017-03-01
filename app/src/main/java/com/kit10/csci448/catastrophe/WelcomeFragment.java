@@ -30,8 +30,6 @@ public class WelcomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(WelcomeActivity.LOG_TAG, "WelcomeFragment : onCreateView");
-        //return super.onCreateView(inflater, container, savedInstanceState);
-        // TODO: create layout and implement this function
         View v = inflater.inflate(R.layout.welcome_fragment, container, false);
 
         mStartButton = (ImageButton) v.findViewById(R.id.start_button);

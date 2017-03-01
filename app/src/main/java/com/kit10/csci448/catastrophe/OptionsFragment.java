@@ -17,6 +17,8 @@ import android.widget.LinearLayout;
 //To take screenshot onClickListener to overlay options onto paused game screen.
 //http://stackoverflow.com/questions/3733988/screen-capture-in-android
 
+    //Right now, sound is initially on.
+
 public class OptionsFragment extends Fragment {
 
     private ImageButton mPlayButton;
@@ -39,8 +41,6 @@ public class OptionsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : onCreateView");
-        //return super.onCreateView(inflater, container, savedInstanceState);
-        // TODO: create layout and implement this function
         View v = inflater.inflate(R.layout.options_fragment, container, false);
 
         mSoundOnLayout = (LinearLayout) v.findViewById(R.id.sound_on_layout);
