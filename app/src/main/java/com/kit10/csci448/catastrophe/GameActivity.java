@@ -7,8 +7,6 @@ import android.view.View;
 import android.widget.Button;
 
 public class GameActivity extends SingleFragmentActivity {
-    public static final String LOG_TAG = "Catastrophe";
-
     @Override
     protected Fragment createFragment() {
         return GameFragment.newInstance();

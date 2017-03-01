@@ -6,7 +6,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 /**
  * Created by Adrien on 3/1/2017.
@@ -15,14 +19,21 @@ import android.widget.Button;
 public class GameFragment extends Fragment {
     private CanvasView mCanvasView;
     private Button mClearButton;
+    private ImageButton mOptionsButton;
+    private LinearLayout mPowerupToolbar;
 
     public static GameFragment newInstance() {
-        Log.d(GameActivity.LOG_TAG, "GameFragment : new instance");
+        Log.d(WelcomeActivity.LOG_TAG, "GameFragment : new instance");
         Bundle args = new Bundle();
 
         GameFragment fragment = new GameFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -41,6 +52,35 @@ public class GameFragment extends Fragment {
             }
         });
 
+        mOptionsButton = (ImageButton) v.findViewById(R.id.options_button);
+        mOptionsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(WelcomeActivity.LOG_TAG, "WelcomeFragment : starting options");
+                startActivityForResult(OptionsActivity.newIntent(getActivity()), WelcomeActivity.REQUEST_CODE_OPTIONS);
+            }
+        });
+
+        mPowerupToolbar = (LinearLayout) v.findViewById(R.id.powerup_toolbar);
+        populatePowerupToolbar();
+
+
         return v;
+    }
+
+    public void populatePowerupToolbar() {
+        // temporary code for demo purposes only
+        for(int i = 0; i < 3; i++) {
+            final ImageButton powerupButton = new ImageButton(getActivity());
+            powerupButton.setBackgroundResource(R.drawable.meowmix);
+            powerupButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getActivity(), "Powerup Selected!", Toast.LENGTH_SHORT).show();
+                    mPowerupToolbar.removeView(powerupButton);
+                }
+            });
+            mPowerupToolbar.addView(powerupButton);
+        }
     }
 }
