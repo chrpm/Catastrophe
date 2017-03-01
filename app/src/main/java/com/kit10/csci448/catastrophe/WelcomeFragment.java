@@ -6,12 +6,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 /**
  * Created by Adrien on 3/1/2017.
  */
 
 public class WelcomeFragment extends Fragment {
+
+    private Button mStartButton;
+
     public static WelcomeFragment newInstance() {
         Log.d(WelcomeActivity.LOG_TAG, "WelcomeFragment : new instance");
         Bundle args = new Bundle();
@@ -26,9 +31,12 @@ public class WelcomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.d(WelcomeActivity.LOG_TAG, "WelcomeFragment : onCreateView");
         return super.onCreateView(inflater, container, savedInstanceState);
-        /* TODO: create layout and implement this function
-        View v = inflater.inflate(R.layout.fragment_welcome, container, false);
-        return v;
-         */
+        // TODO: create layout and implement this function
+        //View v = inflater.inflate(R.layout.fragment_welcome, container, false);
+
+        //mStartButton = (ImageButton) v.findViewById(R.id.start_button);
+
+        //return v;
+
     }
 }
