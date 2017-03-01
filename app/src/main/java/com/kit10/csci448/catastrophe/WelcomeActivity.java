@@ -12,6 +12,8 @@ public class WelcomeActivity extends SingleFragmentActivity {
     public static final int REQUEST_CODE_GAME = 0;
     public static final int REQUEST_CODE_OPTIONS = 1;
 
+
+
     @Override
     protected Fragment createFragment() {
         return WelcomeFragment.newInstance();
