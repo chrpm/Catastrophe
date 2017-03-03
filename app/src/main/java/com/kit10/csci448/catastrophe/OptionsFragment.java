@@ -1,5 +1,6 @@
 package com.kit10.csci448.catastrophe;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -107,7 +108,8 @@ public class OptionsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : quitting");
-                //TODO: Implement quit.
+                android.os.Process.killProcess(android.os.Process.myPid());
+                System.exit(1);
             }
         });
 
