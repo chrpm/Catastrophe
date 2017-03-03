@@ -21,8 +21,6 @@ public class CanvasView extends View {
 
     private Bitmap mBitmap;
     private Canvas mCanvas;
-    private Path mPath;
-    private Paint mPaint;
 
     private float mX, mY;
     private static final float TOLERANCE = 5;
@@ -36,15 +34,6 @@ public class CanvasView extends View {
         // TODO: replace line paiting code with kitten drawing code
         Bitmap kittyPic = BitmapFactory.decodeResource(getResources(), R.drawable.cool_cat);
         mKitty = new Kitten(kittyPic, 400, 400);
-
-        mPath = new Path();
-
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setColor(Color.BLACK);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeJoin(Paint.Join.ROUND);
-        mPaint.setStrokeWidth(4f);
     }
 
     @Override
@@ -59,31 +48,9 @@ public class CanvasView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         mKitty.draw(canvas);
-        //canvas.drawPath(mPath, mPaint);
-    }
-
-    private void startTouch(float x, float y) {
-        mPath.moveTo(x, y);
-        mX = x;
-        mY = y;
-    }
-
-    private void moveTouch(float x, float y) {
-        float difX = Math.abs(x - mX);
-        float difY = Math.abs(y - mY);
-        if (difX >= TOLERANCE || difY >= TOLERANCE) {
-            mPath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
-            mX = x;
-            mY = y;
-        }
-    }
-
-    private void upTouch() {
-        mPath.lineTo(mX, mY);
     }
 
     public void clearCanvas() {
-        mPath.reset();
         invalidate();
     }
 
@@ -96,21 +63,18 @@ public class CanvasView extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mKitty.handleActionDown((int)x, (int)y);
-                startTouch(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (mKitty.isTouched()) {
-                    // the droid was picked up and is being dragged
+                    // kitten is being moved
                     mKitty.setX((int)x);
                     mKitty.setY((int)y);
                 }
-                moveTouch(x, y);
                 break;
             case MotionEvent.ACTION_UP:
                 if (mKitty.isTouched()) {
                     mKitty.setTouched(false);
                 }
-                upTouch();
                 break;
         }
         invalidate();

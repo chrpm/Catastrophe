@@ -40,15 +40,6 @@ public class GameFragment extends Fragment {
 
         mCanvasView = (CanvasView) v.findViewById(R.id.canvas_view);
 
-        // TODO: this code temporary: please remove once this button is no longer necessary
-        mClearButton = (Button) v.findViewById(R.id.clear_button);
-        mClearButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCanvasView.clearCanvas();
-            }
-        });
-
         mOptionsButton = (ImageButton) v.findViewById(R.id.options_button);
         mOptionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
