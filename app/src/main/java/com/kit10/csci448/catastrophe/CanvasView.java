@@ -35,7 +35,7 @@ public class CanvasView extends View {
 
         // TODO: replace line paiting code with kitten drawing code
         Bitmap kittyPic = BitmapFactory.decodeResource(getResources(), R.drawable.cool_cat);
-        mKitty = new Kitten(kittyPic, 300, 300);
+        mKitty = new Kitten(kittyPic, 400, 400);
 
         mPath = new Path();
 
@@ -89,17 +89,27 @@ public class CanvasView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
         float x = event.getX();
         float y = event.getY();
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                mKitty.handleActionDown((int)x, (int)y);
                 startTouch(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
+                if (mKitty.isTouched()) {
+                    // the droid was picked up and is being dragged
+                    mKitty.setX((int)x);
+                    mKitty.setY((int)y);
+                }
                 moveTouch(x, y);
                 break;
             case MotionEvent.ACTION_UP:
+                if (mKitty.isTouched()) {
+                    mKitty.setTouched(false);
+                }
                 upTouch();
                 break;
         }
