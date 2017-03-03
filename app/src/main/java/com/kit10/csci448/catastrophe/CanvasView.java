@@ -2,6 +2,7 @@ package com.kit10.csci448.catastrophe;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -26,11 +27,15 @@ public class CanvasView extends View {
     private float mX, mY;
     private static final float TOLERANCE = 5;
 
+    private Kitten mKitty;
+
     public CanvasView(Context c, AttributeSet attrs) {
         super(c, attrs);
         context = c;
 
         // TODO: replace line paiting code with kitten drawing code
+        Bitmap kittyPic = BitmapFactory.decodeResource(getResources(), R.drawable.cool_cat);
+        mKitty = new Kitten(kittyPic, 300, 300);
 
         mPath = new Path();
 
@@ -53,8 +58,8 @@ public class CanvasView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        canvas.drawPath(mPath, mPaint);
+        mKitty.draw(canvas);
+        //canvas.drawPath(mPath, mPaint);
     }
 
     private void startTouch(float x, float y) {

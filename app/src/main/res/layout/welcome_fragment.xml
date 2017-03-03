@@ -7,7 +7,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/welcomeScreen"
+        android:src="@drawable/welcome_screen"
         android:scaleType="centerCrop"/>
 
     <LinearLayout
@@ -20,7 +20,7 @@
             android:id="@+id/start_button"
             android:layout_width="325dp"
             android:layout_height="150dp"
-            android:background="@drawable/startButton"/>
+            android:background="@drawable/start_button"/>
 
     </LinearLayout>
 
