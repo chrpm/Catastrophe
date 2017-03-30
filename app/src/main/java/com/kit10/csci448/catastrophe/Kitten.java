@@ -32,6 +32,11 @@ public class Kitten {
         return x;
     }
 
+    public void setCoordinates(int x, int y) {
+        setX(x);
+        setY(y);
+    }
+
     public void setX(int x) {
         this.x = x;
     }
@@ -69,7 +74,9 @@ public class Kitten {
         }
     }
 
-
-
     // possible future methods include move(), randomMovement(), flee(), etc.
+    public void flee() {
+        x += 10;
+        y += 10;
+    }
 }

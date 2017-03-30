@@ -11,10 +11,13 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created with help from JavaCodeGeeks CanvasView example
  */
-public class CanvasView extends View {
+public class GameView extends View {
     private Context context;
     public int width;
     public int height;
@@ -25,15 +28,11 @@ public class CanvasView extends View {
     private float mX, mY;
     private static final float TOLERANCE = 5;
 
-    private Kitten mKitty;
+    private List<Kitten> mKitties;
 
-    public CanvasView(Context c, AttributeSet attrs) {
+    public GameView(Context c, AttributeSet attrs) {
         super(c, attrs);
         context = c;
-
-        // TODO: replace line paiting code with kitten drawing code
-        Bitmap kittyPic = BitmapFactory.decodeResource(getResources(), R.drawable.cool_cat);
-        mKitty = new Kitten(kittyPic, 400, 400);
     }
 
     @Override
@@ -47,37 +46,50 @@ public class CanvasView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        mKitty.draw(canvas);
+        for (Kitten k : mKitties) {
+            k.draw(canvas);
+        }
     }
 
-    public void clearCanvas() {
+    public void update() {
         invalidate();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         float x = event.getX();
         float y = event.getY();
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mKitty.handleActionDown((int)x, (int)y);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (mKitty.isTouched()) {
-                    // kitten is being moved
-                    mKitty.setX((int)x);
-                    mKitty.setY((int)y);
+                for (Kitten k : mKitties) {
+                    k.handleActionDown((int)x, (int)y);
                 }
                 break;
+            case MotionEvent.ACTION_MOVE:
+                for (Kitten k : mKitties) {
+                    if (k.isTouched()) {
+                        // kitten is being moved
+                        k.setCoordinates((int) x, (int) y);
+                    }
+                }
+
+                break;
             case MotionEvent.ACTION_UP:
-                if (mKitty.isTouched()) {
-                    mKitty.setTouched(false);
+                for (Kitten k : mKitties) {
+                    k.setTouched(false);
                 }
                 break;
         }
         invalidate();
         return true;
+    }
+
+    public List<Kitten> getKitties() {
+        return mKitties;
+    }
+
+    public void setKitties(List<Kitten> mKitties) {
+        this.mKitties = mKitties;
     }
 }

@@ -3,6 +3,7 @@
     <string name="clear_button">Clear Canvas</string>
     <string name="kittens_remaining">Kittens Remaining: %d</string>
     <string name="time">Time: </string>
+    <string name="start_button">Start!</string>
 
     <string name="sound_on">SOUND : ON</string>
     <string name="sound_off">SOUND : OFF</string>

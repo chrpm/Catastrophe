@@ -5,7 +5,7 @@
     android:padding="10dp"
     android:background="#FFFFFF"
     android:orientation="vertical" >
-    <com.kit10.csci448.catastrophe.CanvasView
+    <com.kit10.csci448.catastrophe.GameView
         android:id="@+id/canvas_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,6 +16,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|left"
         android:background="@drawable/options_gear"/>
+    <Button
+        android:id="@+id/start_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/start_button"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -30,7 +36,7 @@
         android:id="@+id/powerup_toolbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:orientation="horizontal">
+        android:layout_gravity="left|center"
+        android:orientation="vertical">
     </LinearLayout>
 </FrameLayout>
