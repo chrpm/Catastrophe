@@ -2,8 +2,6 @@ package com.kit10.csci448.catastrophe;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,7 +15,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import java.io.IOException;
+import com.kit10.csci448.catastrophe.model.Kitten;
+import com.kit10.csci448.catastrophe.model.ZigKitten;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -57,8 +57,8 @@ public class GameFragment extends Fragment {
         mGameView = (GameView) v.findViewById(R.id.canvas_view);
         Bitmap kittyPic = BitmapFactory.decodeResource(getResources(), R.drawable.cool_cat);
         mKitties = new ArrayList<>();
-        mKitties.add(new Kitten(kittyPic, 400, 400));
-        mKitties.add(new Kitten(kittyPic, 200, 200));
+        mKitties.add(new Kitten(kittyPic, 1200, 2000, 700, 0, 10));
+        mKitties.add(new ZigKitten(kittyPic, 200, 2000, 700, 0, 10, 1000, 0.01));
         mGameView.setKitties(mKitties);
 
         mStartButton = (Button) v.findViewById(R.id.start_button);
@@ -106,15 +106,21 @@ public class GameFragment extends Fragment {
         }
     }
 
-    public void startGame() {
+    private void startGame() {
         mTimer = new Timer();
         mTimer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                for (Kitten k : mKitties) {
-                    k.flee();
-                }
-                mHandler.obtainMessage(1).sendToTarget();
+            gameLoop();
             }
-        }, 0, 1000);
+        }, 0, 10);
+    }
+
+    private void gameLoop() {
+        for (Kitten k : mKitties) {
+            k.flee(1.0);
+        }
+
+        // updates the UI
+        mHandler.obtainMessage(1).sendToTarget();
     }
 }

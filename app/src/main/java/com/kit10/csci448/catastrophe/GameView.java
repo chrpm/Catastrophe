@@ -2,16 +2,13 @@ package com.kit10.csci448.catastrophe;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.ArrayList;
+import com.kit10.csci448.catastrophe.model.Kitten;
+
 import java.util.List;
 
 /**
@@ -25,9 +22,6 @@ public class GameView extends View {
     private Bitmap mBitmap;
     private Canvas mCanvas;
 
-    private float mX, mY;
-    private static final float TOLERANCE = 5;
-
     private List<Kitten> mKitties;
 
     public GameView(Context c, AttributeSet attrs) {
@@ -39,6 +33,8 @@ public class GameView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
+        width = w;
+        height = w;
         mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(mBitmap);
     }
