@@ -78,6 +78,7 @@ public class GameView extends View {
                 break;
             case MotionEvent.ACTION_UP:
                 for (Kitten k : mKitties) {
+                    k.handleActionUp((int) x, (int) y);
                     k.setTouched(false);
                 }
                 break;

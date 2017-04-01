@@ -126,10 +126,12 @@ public class GameFragment extends Fragment {
             mKitties.add(new Kitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
                     700, 0,
+                    mHome,
                     Kitten.DEFAULT_SPEED, Kitten.DEFAULT_SPEED_GROWTH));
             mKitties.add(new ZigKitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
                     700, 0,
+                    mHome,
                     Kitten.DEFAULT_SPEED, Kitten.DEFAULT_SPEED_GROWTH,
                     ZigKitten.DEFAULT_VARIABILITY, ZigKitten.DEFAULT_PROBABILiTY));
         }

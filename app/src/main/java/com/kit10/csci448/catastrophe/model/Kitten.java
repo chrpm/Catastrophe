@@ -25,6 +25,7 @@ public class Kitten {
 
     protected int targetX;
     protected int targetY;
+    protected Home home;
     protected double speed;
     protected double speedGrowth;
 
@@ -35,9 +36,10 @@ public class Kitten {
     private boolean escaped = false;
     private boolean scored = false;
 
-    public Kitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, double speed, double speedGrowth) {
+    public Kitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, Home home, double speed, double speedGrowth) {
         setCoordinates(x, y);
         setTargetCoordinates(targetX, targetY);
+        this.home = home;
         this.speed = speed;
         this.speedGrowth = speedGrowth;
         this.sweetCatPic = sweetCatPic;
@@ -57,6 +59,16 @@ public class Kitten {
             }
         } else {
             setTouched(false);
+        }
+    }
+
+    public void handleActionUp(int eventX, int eventY) {
+        if (touched) {
+            if ((eventX <= home.rightX() && eventX >= home.leftX()) && (eventY <= home.bottomY() && eventY >= home.topY())) {
+                fleeing = false;
+                scored = true;
+                Log.d(WelcomeActivity.LOG_TAG, "Kitten scored");
+            }
         }
     }
 

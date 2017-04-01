@@ -17,8 +17,8 @@ public class ZigKitten extends Kitten {
     private double zigProbability;
     private boolean zigLeft;
 
-    public ZigKitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, double speed, double speedGrowth, int zigVariability, double zigProbability) {
-        super(sweetCatPic, x, y, targetX, targetY, speed, speedGrowth);
+    public ZigKitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, Home home, double speed, double speedGrowth, int zigVariability, double zigProbability) {
+        super(sweetCatPic, x, y, targetX, targetY, home, speed, speedGrowth);
         zigLeft = new Random().nextBoolean();
         this.zigVariability = zigVariability;
         this.zigProbability = zigProbability;
