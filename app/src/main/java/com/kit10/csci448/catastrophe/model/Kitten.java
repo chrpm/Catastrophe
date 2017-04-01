@@ -17,20 +17,29 @@ public class Kitten {
     public static int MAX_PIXEL_X;
     public static int MAX_PIXEL_Y;
 
+    public static final double DEFAULT_SPEED = 10.0;
+    public static final double DEFAULT_SPEED_GROWTH = 0.1;
+
     protected int x;
     protected int y;
 
     protected int targetX;
     protected int targetY;
-    protected int speed;
+    protected double speed;
+    protected double speedGrowth;
 
     private Bitmap sweetCatPic;
     private boolean touched;
 
-    public Kitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, int speed) {
+    private boolean fleeing = false;
+    private boolean escaped = false;
+    private boolean scored = false;
+
+    public Kitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, double speed, double speedGrowth) {
         setCoordinates(x, y);
         setTargetCoordinates(targetX, targetY);
         this.speed = speed;
+        this.speedGrowth = speedGrowth;
         this.sweetCatPic = sweetCatPic;
     }
 
@@ -40,7 +49,7 @@ public class Kitten {
 
     public void handleActionDown(int eventX, int eventY) {
         if (eventX >= (x - sweetCatPic.getWidth() / 2) && (eventX <= (x + sweetCatPic.getWidth()/2))) {
-            if (eventY >= (y - sweetCatPic.getHeight() / 2) && (y <= (y + sweetCatPic.getHeight() / 2))) {
+            if (eventY >= (y - sweetCatPic.getHeight() / 2) && (y <= (y + sweetCatPic.getHeight() / 2)) && fleeing) {
                 // Cat picture has been touched
                 setTouched(true);
             } else {
@@ -51,7 +60,7 @@ public class Kitten {
         }
     }
 
-    public void flee(double speed) {
+    public void flee() {
         move();
     }
 
@@ -64,6 +73,7 @@ public class Kitten {
      */
     public void move() {
         double hyp = Math.sqrt(Math.pow((targetX - x), 2.0) + Math.pow((targetY - y), 2.0)); // determine length of hypotenuse
+        speed += speedGrowth;
         double ratio = speed / hyp;
         x += (int) (ratio * (targetX - x));
         y += (int) (ratio * (targetY - y));
@@ -111,5 +121,26 @@ public class Kitten {
     }
     public boolean isTouched() {
         return touched;
+    }
+
+    public boolean isFleeing() {
+        return fleeing;
+    }
+    public void setFleeing(boolean fleeing) {
+        this.fleeing = fleeing;
+    }
+
+    public boolean isEscaped() {
+        return escaped;
+    }
+    public void setEscaped(boolean escaped) {
+        this.escaped = escaped;
+    }
+
+    public boolean isScored() {
+        return scored;
+    }
+    public void setScored(boolean scored) {
+        this.scored = scored;
     }
 }

@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.kit10.csci448.catastrophe.model.Home;
 import com.kit10.csci448.catastrophe.model.Kitten;
 
 import java.util.List;
@@ -18,11 +19,14 @@ public class GameView extends View {
     private Context context;
     public int width;
     public int height;
+    public static final int UPPER_BORDER = 0;
 
     private Bitmap mBitmap;
     private Canvas mCanvas;
 
     private List<Kitten> mKitties;
+
+    private Home mHome;
 
     public GameView(Context c, AttributeSet attrs) {
         super(c, attrs);
@@ -42,6 +46,7 @@ public class GameView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        mHome.draw(canvas);
         for (Kitten k : mKitties) {
             k.draw(canvas);
         }
@@ -81,11 +86,24 @@ public class GameView extends View {
         return true;
     }
 
+    public void setGamePieces(List<Kitten> kitties, Home home) {
+        setKitties(kitties);
+        setHome(home);
+    }
+
     public List<Kitten> getKitties() {
         return mKitties;
     }
 
-    public void setKitties(List<Kitten> mKitties) {
-        this.mKitties = mKitties;
+    public void setKitties(List<Kitten> kitties) {
+        this.mKitties = kitties;
+    }
+
+    public Home getHome() {
+        return mHome;
+    }
+
+    public void setHome(Home mHome) {
+        this.mHome = mHome;
     }
 }

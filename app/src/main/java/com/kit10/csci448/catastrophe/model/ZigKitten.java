@@ -9,13 +9,16 @@ import java.util.Random;
  */
 
 public class ZigKitten extends Kitten {
+    public static final int DEFAULT_VARIABILITY = 1000;
+    public static final double DEFAULT_PROBABILiTY = 0.025;
+
     private int centerTargetX;
     private int zigVariability;
     private double zigProbability;
     private boolean zigLeft;
 
-    public ZigKitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, int speed, int zigVariability, double zigProbability) {
-        super(sweetCatPic, x, y, targetX, targetY, speed);
+    public ZigKitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, double speed, double speedGrowth, int zigVariability, double zigProbability) {
+        super(sweetCatPic, x, y, targetX, targetY, speed, speedGrowth);
         zigLeft = new Random().nextBoolean();
         this.zigVariability = zigVariability;
         this.zigProbability = zigProbability;

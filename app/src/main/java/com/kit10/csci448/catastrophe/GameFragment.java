@@ -15,11 +15,13 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.kit10.csci448.catastrophe.model.Home;
 import com.kit10.csci448.catastrophe.model.Kitten;
 import com.kit10.csci448.catastrophe.model.ZigKitten;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -37,6 +39,7 @@ public class GameFragment extends Fragment {
     public Handler mHandler;
 
     private List<Kitten> mKitties;
+    private Home mHome;
 
     public static GameFragment newInstance() {
         Log.d(WelcomeActivity.LOG_TAG, "GameFragment : new instance");
@@ -55,18 +58,12 @@ public class GameFragment extends Fragment {
         View v = inflater.inflate(R.layout.activity_game, container, false);
 
         mGameView = (GameView) v.findViewById(R.id.canvas_view);
-        Bitmap kittyPic = BitmapFactory.decodeResource(getResources(), R.drawable.cool_cat);
         mKitties = new ArrayList<>();
-        mKitties.add(new Kitten(kittyPic, 1200, 2000, 700, 0, 10));
-        mKitties.add(new ZigKitten(kittyPic, 200, 2000, 700, 0, 10, 1000, 0.01));
-        mGameView.setKitties(mKitties);
+        Bitmap homePic = BitmapFactory.decodeResource(getResources(), R.drawable.home);
+        mHome = new Home(homePic, new int[]{200,1200,1600,2000});
+        mGameView.setGamePieces(mKitties, mHome);
 
         mStartButton = (Button) v.findViewById(R.id.start_button);
-        mHandler = new Handler() {
-            public void handleMessage(Message msg) {
-                mGameView.update();
-            }
-        };
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,6 +71,11 @@ public class GameFragment extends Fragment {
                 startGame();
             }
         });
+        mHandler = new Handler() {
+            public void handleMessage(Message msg) {
+                mGameView.update();
+            }
+        };
 
         mOptionsButton = (ImageButton) v.findViewById(R.id.options_button);
         mOptionsButton.setOnClickListener(new View.OnClickListener() {
@@ -108,6 +110,7 @@ public class GameFragment extends Fragment {
 
     private void startGame() {
         mTimer = new Timer();
+        addNewKitties();
         mTimer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
             gameLoop();
@@ -115,12 +118,46 @@ public class GameFragment extends Fragment {
         }, 0, 10);
     }
 
+    private void addNewKitties() {
+        Random rand = new Random();
+        Bitmap kittyPic = BitmapFactory.decodeResource(getResources(), R.drawable.cool_cat);
+        for (int i = 0; i < 3; i++) { // TODO: generate kittens on a per-level basis
+            int n = rand.nextBoolean() ? -1 : 1; // sets n to either 1 or -1
+            mKitties.add(new Kitten(kittyPic,
+                    mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
+                    700, 0,
+                    Kitten.DEFAULT_SPEED, Kitten.DEFAULT_SPEED_GROWTH));
+            mKitties.add(new ZigKitten(kittyPic,
+                    mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
+                    700, 0,
+                    Kitten.DEFAULT_SPEED, Kitten.DEFAULT_SPEED_GROWTH,
+                    ZigKitten.DEFAULT_VARIABILITY, ZigKitten.DEFAULT_PROBABILiTY));
+        }
+    }
+
     private void gameLoop() {
+        randomFleeing();
         for (Kitten k : mKitties) {
-            k.flee(1.0);
+            if (k.isFleeing()) {
+                k.flee();
+            }
+            if (k.getY() <= GameView.UPPER_BORDER) {
+                k.setEscaped(true);
+                k.setFleeing(false);
+            }
         }
 
         // updates the UI
         mHandler.obtainMessage(1).sendToTarget();
+    }
+
+    private void randomFleeing() {
+        double fleeProbability = 0.005;
+        Random rand = new Random();
+        for (Kitten k : mKitties) {
+            if (rand.nextDouble() <= fleeProbability) {
+                k.setFleeing(true);
+            }
+        }
     }
 }
