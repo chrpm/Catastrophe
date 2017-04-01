@@ -18,6 +18,10 @@ public class Home {
     private Map<CoordinateId, Integer> coordinateMap;
     private Bitmap sweetHomePic;
 
+    /**
+     * @param sweetHomePic : bitmat defining the home's texture
+     * @param coordinates : defines the home's boundaries, format is {LEFT, TOP, RIGHT, BOTTOM}
+     */
     public Home(Bitmap sweetHomePic, int[] coordinates) {
         this.sweetHomePic = sweetHomePic;
         coordinateMap = new HashMap<>();

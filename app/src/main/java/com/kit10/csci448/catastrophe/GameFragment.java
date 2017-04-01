@@ -59,19 +59,26 @@ public class GameFragment extends Fragment {
 
         mGameView = (GameView) v.findViewById(R.id.canvas_view);
         mKitties = new ArrayList<>();
-        Bitmap homePic = BitmapFactory.decodeResource(getResources(), R.drawable.home);
-        mHome = new Home(homePic, new int[]{200,1200,1600,2000});
+        Bitmap homePic = BitmapFactory.decodeResource(getResources(), R.drawable.home); // get the home image
+        /*
+        TODO: soft-code this line;
+        TODO: the home should be placed at the bottom center of the screen, regardless of hardware/screen size
+        TODO: the home's dimensions should reflect the size of the bitmap
+        */
+        mHome = new Home(homePic, new int[]{200,1200,1600,2000}); // home is represented as a rectangle: coordinate format is {left, right, top, bottom
         mGameView.setGamePieces(mKitties, mHome);
 
         mStartButton = (Button) v.findViewById(R.id.start_button);
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mStartButton.setVisibility(View.GONE);
+                mStartButton.setVisibility(View.GONE); // makes the start button invisible
+                // TODO: we may want to disable everything before this button is pressed (excluding the options button)
                 startGame();
             }
         });
         mHandler = new Handler() {
+            // the game is run on a different thread, so it has to send information to the UI thread through this handler
             public void handleMessage(Message msg) {
                 mGameView.update();
             }
@@ -92,14 +99,19 @@ public class GameFragment extends Fragment {
         return v;
     }
 
+    /**
+     * Spawns powerups in the powerup toolbar and defines their functionality
+     */
     public void populatePowerupToolbar() {
         // temporary code for demo purposes only
+        // TODO: implement powerups
         for(int i = 0; i < 3; i++) {
             final ImageButton powerupButton = new ImageButton(getActivity());
             powerupButton.setBackgroundResource(R.drawable.meowmix);
             powerupButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // TODO: make kittens run back towards home
                     Toast.makeText(getActivity(), "Powerup Selected!", Toast.LENGTH_SHORT).show();
                     mPowerupToolbar.removeView(powerupButton);
                 }
@@ -108,16 +120,23 @@ public class GameFragment extends Fragment {
         }
     }
 
+    /**
+     * Starts the game on a new thread that is updated at a fixed rate
+     */
     private void startGame() {
         mTimer = new Timer();
         addNewKitties();
+        int updateRate = 10; // update the game every 10 ms
         mTimer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-            gameLoop();
+                gameLoop();
             }
-        }, 0, 10);
+        }, 0, updateRate);
     }
 
+    /**
+     * Generates kittens in the home box
+     */
     private void addNewKitties() {
         Random rand = new Random();
         Bitmap kittyPic = BitmapFactory.decodeResource(getResources(), R.drawable.cool_cat);
@@ -137,6 +156,10 @@ public class GameFragment extends Fragment {
         }
     }
 
+    /**
+     * Performs repeated game actions like moving the kittens and checking the game state
+     * NOTE: this function is executed on a new thread; therefor UI changes must be forwarded through the mHandler object
+     */
     private void gameLoop() {
         randomFleeing();
         for (Kitten k : mKitties) {
@@ -147,12 +170,19 @@ public class GameFragment extends Fragment {
                 k.setEscaped(true);
                 k.setFleeing(false);
             }
+
+            if (k.isScored()) {
+                // TODO: update the UI
+            }
         }
 
         // updates the UI
         mHandler.obtainMessage(1).sendToTarget();
     }
 
+    /**
+     * randomly causes kittens to flee
+     */
     private void randomFleeing() {
         double fleeProbability = 0.005;
         Random rand = new Random();

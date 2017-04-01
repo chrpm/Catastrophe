@@ -36,6 +36,16 @@ public class Kitten {
     private boolean escaped = false;
     private boolean scored = false;
 
+    /**
+     * @param sweetCatPic : bitmat defining the kitten's texture
+     * @param x : x start location
+     * @param y : y start location
+     * @param targetX : x target location
+     * @param targetY : y target location
+     * @param home : defines the cat's home
+     * @param speed : cat's move speed
+     * @param speedGrowth : cat's move speed growth per game loop iteration
+     */
     public Kitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, Home home, double speed, double speedGrowth) {
         setCoordinates(x, y);
         setTargetCoordinates(targetX, targetY);
@@ -64,6 +74,7 @@ public class Kitten {
 
     public void handleActionUp(int eventX, int eventY) {
         if (touched) {
+            // check if the kitten is inside the home box when dropped
             if ((eventX <= home.rightX() && eventX >= home.leftX()) && (eventY <= home.bottomY() && eventY >= home.topY())) {
                 fleeing = false;
                 scored = true;

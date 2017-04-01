@@ -17,6 +17,11 @@ public class ZigKitten extends Kitten {
     private double zigProbability;
     private boolean zigLeft;
 
+    /**
+     * See com.kit10.csci448.catastrophe.model.Kitten
+     * @param zigVariability : defines the range on which the kitten zigzags
+     * @param zigProbability : defines the likelihood off the kitten to zigzag per iteration
+     */
     public ZigKitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, Home home, double speed, double speedGrowth, int zigVariability, double zigProbability) {
         super(sweetCatPic, x, y, targetX, targetY, home, speed, speedGrowth);
         zigLeft = new Random().nextBoolean();
