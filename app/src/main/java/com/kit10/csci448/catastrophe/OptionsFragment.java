@@ -108,8 +108,9 @@ public class OptionsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : quitting");
-                android.os.Process.killProcess(android.os.Process.myPid());
-                System.exit(1);
+                //android.os.Process.killProcess(android.os.Process.myPid());
+                //System.exit(1);
+                startActivityForResult(WelcomeActivity.newIntent(getActivity()), WelcomeActivity.REQUEST_CODE_GAME);
             }
         });
 

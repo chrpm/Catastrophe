@@ -16,7 +16,7 @@ public class WelcomeActivity extends SingleFragmentActivity {
     public static final int REQUEST_CODE_OPTIONS = 1;
 
     public static Intent newIntent(Context packageContext) {
-        Log.d(WelcomeActivity.LOG_TAG, "WlecomeActivity: new intent");
+        Log.d(WelcomeActivity.LOG_TAG, "WelcomeActivity: new intent");
         Intent intent = new Intent(packageContext, WelcomeActivity.class);
         return intent;
     }
