@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kit10.csci448.catastrophe.model.Home;
@@ -34,12 +35,18 @@ public class GameFragment extends Fragment {
     private ImageButton mOptionsButton;
     private Button mStartButton;
     private LinearLayout mPowerupToolbar;
+    private Boolean play;
 
     private Timer mTimer;
+    private TimerTask mTask;
     public Handler mHandler;
+    private long startTime;
+    private long totalPlayTime = 0;
+    private TextView mTime;
 
     private List<Kitten> mKitties;
     private Home mHome;
+    int i = 0;
 
     public static GameFragment newInstance() {
         Log.d(WelcomeActivity.LOG_TAG, "GameFragment : new instance");
@@ -68,6 +75,10 @@ public class GameFragment extends Fragment {
         mHome = new Home(homePic, new int[]{200,1200,1600,2000}); // home is represented as a rectangle: coordinate format is {left, right, top, bottom
         mGameView.setGamePieces(mKitties, mHome);
 
+        mTime = (TextView)v.findViewById(R.id.time);
+        mTime.setText("Time: 0:00");
+
+
         mStartButton = (Button) v.findViewById(R.id.start_button);
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,8 +89,9 @@ public class GameFragment extends Fragment {
             }
         });
         mHandler = new Handler() {
-            // the game is run on a different thread, so it has to send information to the UI thread through this handler
+             //the game is run on a different thread, so it has to send information to the UI thread through this handler
             public void handleMessage(Message msg) {
+                mTime.setText(getTime());
                 mGameView.update();
             }
         };
@@ -134,6 +146,28 @@ public class GameFragment extends Fragment {
         }, 0, updateRate);
     }
 
+    private String getTime() {
+        int seconds = (int) (totalPlayTime / 1000);
+        totalPlayTime = totalPlayTime + 10;
+        int minutes = seconds / 60;
+        seconds = seconds % 60;
+        String sSeconds;
+        String sMinutes;
+        if(seconds < 10) {
+            sSeconds = new Integer(seconds).toString();
+            sSeconds = "0" + sSeconds;
+            sMinutes = new Integer(minutes).toString();
+        }
+        else {
+            sSeconds = new Integer(seconds).toString();
+            sMinutes = new Integer(minutes).toString();
+        }
+        String time = "Time: " + sMinutes + ":" + sSeconds;
+        return time;
+
+
+    }
+
     /**
      * Generates kittens in the home box
      */
@@ -160,6 +194,7 @@ public class GameFragment extends Fragment {
      * Performs repeated game actions like moving the kittens and checking the game state
      * NOTE: this function is executed on a new thread; therefor UI changes must be forwarded through the mHandler object
      */
+
     private void gameLoop() {
         randomFleeing();
         for (Kitten k : mKitties) {
@@ -192,4 +227,22 @@ public class GameFragment extends Fragment {
             }
         }
     }
+
+    public void resetPlayTime() {
+        totalPlayTime = 0;
+    }
+
+    public void incrementPlayTime() {
+        totalPlayTime = totalPlayTime + 10;
+    }
+
+    public long getPlayTime() {
+        return totalPlayTime;
+    }
+
+    /*class ThisTask extends TimerTask {
+        public void run() {
+            gameLoop();
+        }
+    }*/
 }

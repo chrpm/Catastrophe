@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/game_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -29,10 +30,11 @@
         android:layout_gravity="top|center"
         android:text="@string/kittens_remaining"/>
     <TextView
+        android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|right"
-        android:text="@string/time"/>
+        tools:text="Time"/>
     <LinearLayout
         android:id="@+id/powerup_toolbar"
         android:layout_width="wrap_content"
