@@ -36,6 +36,7 @@ public class GameFragment extends Fragment {
     private Button mStartButton;
     private LinearLayout mPowerupToolbar;
     private Boolean play;
+    private int kittensRemaining = 0;
 
     private Timer mTimer;
     private TimerTask mTask;
@@ -43,10 +44,10 @@ public class GameFragment extends Fragment {
     private long startTime;
     private long totalPlayTime = 0;
     private TextView mTime;
+    private TextView mRemaining;
 
     private List<Kitten> mKitties;
     private Home mHome;
-    int i = 0;
 
     public static GameFragment newInstance() {
         Log.d(WelcomeActivity.LOG_TAG, "GameFragment : new instance");
@@ -78,6 +79,9 @@ public class GameFragment extends Fragment {
         mTime = (TextView)v.findViewById(R.id.time);
         mTime.setText("Time: 0:00");
 
+        mRemaining = (TextView)v.findViewById(R.id.remaining);
+        mRemaining.setText("Kittens Remaining: 0");
+
 
         mStartButton = (Button) v.findViewById(R.id.start_button);
         mStartButton.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +96,7 @@ public class GameFragment extends Fragment {
              //the game is run on a different thread, so it has to send information to the UI thread through this handler
             public void handleMessage(Message msg) {
                 mTime.setText(getTime());
+                mRemaining.setText("Kittens Remaining: " + kittensRemaining);
                 mGameView.update();
             }
         };
@@ -181,12 +186,14 @@ public class GameFragment extends Fragment {
                     700, 0,
                     mHome,
                     Kitten.DEFAULT_SPEED, Kitten.DEFAULT_SPEED_GROWTH));
+            kittensRemaining++;
             mKitties.add(new ZigKitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
                     700, 0,
                     mHome,
                     Kitten.DEFAULT_SPEED, Kitten.DEFAULT_SPEED_GROWTH,
                     ZigKitten.DEFAULT_VARIABILITY, ZigKitten.DEFAULT_PROBABILiTY));
+            kittensRemaining++;
         }
     }
 
