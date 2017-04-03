@@ -17,8 +17,8 @@ public class Kitten {
     public static int MAX_PIXEL_X;
     public static int MAX_PIXEL_Y;
 
-    public static final double DEFAULT_SPEED = 10.0;
-    public static final double DEFAULT_SPEED_GROWTH = 0.1;
+    public static final double DEFAULT_SPEED = 5.0;
+    public static final double DEFAULT_SPEED_GROWTH = 0.05;
 
     protected int x;
     protected int y;
