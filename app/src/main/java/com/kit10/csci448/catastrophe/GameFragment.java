@@ -197,7 +197,7 @@ public class GameFragment extends Fragment {
     private void addNewKitties() {
         Random rand = new Random();
         Bitmap kittyPic = BitmapFactory.decodeResource(getResources(), R.drawable.cool_cat);
-        for (int i = 0; i < 1; i++) { // TODO: generate kittens on a per-level basis
+        for (int i = 0; i < 3; i++) { // TODO: generate kittens on a per-level basis
             int n = rand.nextBoolean() ? -1 : 1; // sets n to either 1 or -1
             mKitties.add(new Kitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
@@ -205,13 +205,13 @@ public class GameFragment extends Fragment {
                     mHome,
                     Kitten.DEFAULT_SPEED, Kitten.DEFAULT_SPEED_GROWTH));
             kittensRemaining++;
-            /*mKitties.add(new ZigKitten(kittyPic,
+            mKitties.add(new ZigKitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
                     700, 0,
                     mHome,
                     Kitten.DEFAULT_SPEED, Kitten.DEFAULT_SPEED_GROWTH,
                     ZigKitten.DEFAULT_VARIABILITY, ZigKitten.DEFAULT_PROBABILiTY));
-            kittensRemaining++;*/
+            kittensRemaining++;
         }
     }
 
@@ -235,6 +235,7 @@ public class GameFragment extends Fragment {
             if (k.isFleeing()) {
                 k.flee();
             }
+            /*
             if(k.getHitsLeft() > 0 && k.hasEntered()) {
                 if((k.getY() - (k.getCatHeight() / 2)) <= 0 || (k.getY() + (k.getCatHeight() / 2)) >= mGameView.getHeight()) {
                     k.setTargetY(k.getOldY());
@@ -258,7 +259,11 @@ public class GameFragment extends Fragment {
                     k.setFleeing(false);
 
                 }
+            }*/
 
+            if (k.getY() <= 0) {
+                k.setEscaped(true);
+                k.setFleeing(false);
             }
 
             if (k.isScored()) {
