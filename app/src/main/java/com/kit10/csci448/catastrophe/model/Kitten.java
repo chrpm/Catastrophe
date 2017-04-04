@@ -1,5 +1,6 @@
 package com.kit10.csci448.catastrophe.model;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.provider.SyncStateContract;
@@ -22,6 +23,8 @@ public class Kitten {
 
     protected int x;
     protected int y;
+    private int oldX;
+    private int oldY;
 
     protected int targetX;
     protected int targetY;
@@ -35,6 +38,9 @@ public class Kitten {
     private boolean fleeing = false;
     private boolean escaped = false;
     private boolean scored = false;
+    private boolean entered = false;
+
+    private int hitsLeft;
 
     /**
      * @param sweetCatPic : bitmat defining the kitten's texture
@@ -53,10 +59,11 @@ public class Kitten {
         this.speed = speed;
         this.speedGrowth = speedGrowth;
         this.sweetCatPic = sweetCatPic;
+        hitsLeft = 3;
     }
 
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(sweetCatPic, x - (sweetCatPic.getWidth() / 2), y - (sweetCatPic.getHeight() / 2), null);
+        canvas.drawBitmap(sweetCatPic, x, y , null);
     }
 
     public void handleActionDown(int eventX, int eventY) {
@@ -95,11 +102,14 @@ public class Kitten {
      * speed : maximum single step move distance; this value must be large enough to prevent significant double->int truncation
      */
     public void move() {
+        oldX = x;
+        oldY = y;
         double hyp = Math.sqrt(Math.pow((targetX - x), 2.0) + Math.pow((targetY - y), 2.0)); // determine length of hypotenuse
         speed += speedGrowth;
         double ratio = speed / hyp;
         x += (int) (ratio * (targetX - x));
         y += (int) (ratio * (targetY - y));
+
     }
 
     public void setSweetCatPic(Bitmap sweetCatPic) {
@@ -165,5 +175,61 @@ public class Kitten {
     }
     public void setScored(boolean scored) {
         this.scored = scored;
+    }
+
+    public static int getScreenWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels;
+    }
+
+    public static int getScreenHeight() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
+    }
+
+    public int getCatWidth() {
+        return sweetCatPic.getWidth();
+    }
+
+    public int getCatHeight() {
+        return sweetCatPic.getHeight();
+    }
+
+    public int getHitsLeft() {
+        return hitsLeft;
+    }
+
+    public void hit() {
+        hitsLeft--;
+    }
+
+    public int getTargetX() {
+        return targetX;
+    }
+
+    public int getTargetY() {
+        return targetY;
+    }
+
+    public void setTargetX(int x) {
+        targetX = x;
+    }
+
+    public void setTargetY(int y) {
+        targetY = y;
+    }
+
+    public int getOldX() {
+        return oldX;
+    }
+
+    public int getOldY() {
+        return oldY;
+    }
+
+    public boolean hasEntered() {
+        return entered;
+    }
+
+    public void setEntered() {
+        entered = true;
     }
 }

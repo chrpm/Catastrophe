@@ -37,6 +37,8 @@ public class GameFragment extends Fragment {
     private LinearLayout mPowerupToolbar;
     private Boolean play;
     private int kittensRemaining = 0;
+    private String string = "";
+    private String str = "";
 
     private Timer mTimer;
     private TimerTask mTask;
@@ -95,8 +97,10 @@ public class GameFragment extends Fragment {
         mHandler = new Handler() {
              //the game is run on a different thread, so it has to send information to the UI thread through this handler
             public void handleMessage(Message msg) {
-                mTime.setText(getTime());
-                mRemaining.setText("Kittens Remaining: " + kittensRemaining);
+                //mTime.setText(getTime());
+                //mRemaining.setText(recountKitties());
+                mRemaining.setText(string);
+                mTime.setText(str);
                 mGameView.update();
             }
         };
@@ -179,7 +183,7 @@ public class GameFragment extends Fragment {
     private void addNewKitties() {
         Random rand = new Random();
         Bitmap kittyPic = BitmapFactory.decodeResource(getResources(), R.drawable.cool_cat);
-        for (int i = 0; i < 3; i++) { // TODO: generate kittens on a per-level basis
+        for (int i = 0; i < 1; i++) { // TODO: generate kittens on a per-level basis
             int n = rand.nextBoolean() ? -1 : 1; // sets n to either 1 or -1
             mKitties.add(new Kitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
@@ -187,13 +191,13 @@ public class GameFragment extends Fragment {
                     mHome,
                     Kitten.DEFAULT_SPEED, Kitten.DEFAULT_SPEED_GROWTH));
             kittensRemaining++;
-            mKitties.add(new ZigKitten(kittyPic,
+            /*mKitties.add(new ZigKitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
                     700, 0,
                     mHome,
                     Kitten.DEFAULT_SPEED, Kitten.DEFAULT_SPEED_GROWTH,
                     ZigKitten.DEFAULT_VARIABILITY, ZigKitten.DEFAULT_PROBABILiTY));
-            kittensRemaining++;
+            kittensRemaining++;*/
         }
     }
 
@@ -201,16 +205,46 @@ public class GameFragment extends Fragment {
      * Performs repeated game actions like moving the kittens and checking the game state
      * NOTE: this function is executed on a new thread; therefor UI changes must be forwarded through the mHandler object
      */
-
     private void gameLoop() {
         randomFleeing();
+        string = "";
         for (Kitten k : mKitties) {
+            if((k.getY() + (k.getCatHeight() / 2)) < mGameView.getHeight() && (k.getY() - (k.getCatHeight() / 2)) > 0) {
+                if((k.getX() + (k.getCatWidth() / 2)) < mGameView.getWidth() && (k.getX() - (k.getCatWidth() / 2)) > 0) {
+                    k.setEntered();
+                }
+            }
+            string = new Integer(k.getHitsLeft()).toString();
+            if(k.hasEntered()) {
+                str = "ENTERED";
+            }
             if (k.isFleeing()) {
                 k.flee();
             }
-            if (k.getY() <= GameView.UPPER_BORDER) {
-                k.setEscaped(true);
-                k.setFleeing(false);
+            if(k.getHitsLeft() > 0 && k.hasEntered()) {
+                if((k.getY() - (k.getCatHeight() / 2)) <= 0 || (k.getY() + (k.getCatHeight() / 2)) >= mGameView.getHeight()) {
+                    k.setTargetY(k.getOldY());
+                    k.setTargetX(k.getTargetX() - k.getOldX() + k.getTargetX());
+                    k.hit();
+                }
+                else if((k.getX() - (k.getCatWidth() / 2)) <= 0 || (k.getX() + (k.getCatWidth() / 2)) >= mGameView.getWidth()) {
+                    k.setTargetX(k.getOldX());
+                    k.setTargetY(k.getTargetY() - k.getOldY() + k.getTargetY());
+                    k.hit();
+                }
+            }
+            else if(k.getHitsLeft() <= 0){
+                if((k.getY() + (k.getCatHeight() / 2)) <= 0 || (k.getY() - (k.getCatHeight() / 2)) >= mGameView.getHeight()) {
+                    k.setEscaped(true);
+                    k.setFleeing(false);
+
+                }
+                if((k.getX() + (k.getCatWidth() / 2)) <= 0 || (k.getX() - (k.getCatWidth() / 2)) >= mGameView.getWidth()) {
+                    k.setEscaped(true);
+                    k.setFleeing(false);
+
+                }
+
             }
 
             if (k.isScored()) {
@@ -247,9 +281,16 @@ public class GameFragment extends Fragment {
         return totalPlayTime;
     }
 
-    /*class ThisTask extends TimerTask {
-        public void run() {
-            gameLoop();
+    public String recountKitties() {
+        for(Kitten k : mKitties) {
+
+            if(k.isEscaped()) {
+                mKitties.remove(k);
+            }
         }
-    }*/
+
+        kittensRemaining = mKitties.size();
+        String remaining = "Kittens Remaining: " + kittensRemaining;
+        return remaining;
+    }
 }
