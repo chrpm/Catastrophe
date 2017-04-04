@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,8 @@ import java.util.TimerTask;
  */
 
 public class GameFragment extends Fragment {
+    public final double HOME_SIZE_PERCENTAGE = 0.3;
+
     private GameView mGameView;
     private ImageButton mOptionsButton;
     private Button mStartButton;
@@ -75,7 +78,18 @@ public class GameFragment extends Fragment {
         TODO: the home should be placed at the bottom center of the screen, regardless of hardware/screen size
         TODO: the home's dimensions should reflect the size of the bitmap
         */
-        mHome = new Home(homePic, new int[]{200,1200,1600,2000}); // home is represented as a rectangle: coordinate format is {left, right, top, bottom
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenHeight = displayMetrics.heightPixels;
+        int screenWidth = displayMetrics.widthPixels;
+        Log.d("Height", Integer.toString(screenHeight));
+        Log.d("Width", Integer.toString(screenWidth));
+
+        double homeHeight = screenHeight - (screenHeight * HOME_SIZE_PERCENTAGE);
+        Log.d("Home Height", Integer.toString((int)homeHeight));
+
+        mHome = new Home(homePic, new int[]{0,(int)homeHeight,screenWidth,screenHeight}); // home is represented as a rectangle: coordinate format is {left, right, top, bottom
+
         mGameView.setGamePieces(mKitties, mHome);
 
         mTime = (TextView)v.findViewById(R.id.time);

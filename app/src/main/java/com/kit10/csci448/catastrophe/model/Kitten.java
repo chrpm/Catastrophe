@@ -63,7 +63,10 @@ public class Kitten {
     }
 
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(sweetCatPic, x, y , null);
+        if(isEscaped()){
+            return;
+        }
+        canvas.drawBitmap(sweetCatPic, x - (sweetCatPic.getWidth() / 2), y - (sweetCatPic.getHeight() / 2), null);
     }
 
     public void handleActionDown(int eventX, int eventY) {
@@ -85,6 +88,17 @@ public class Kitten {
             if ((eventX <= home.rightX() && eventX >= home.leftX()) && (eventY <= home.bottomY() && eventY >= home.topY())) {
                 fleeing = false;
                 scored = true;
+                Log.d(WelcomeActivity.LOG_TAG, "Kitten scored");
+            }
+        }
+    }
+
+    public void handleActionFlung(float eventX, float eventY) {
+        if (eventX >= (x - sweetCatPic.getWidth() / 2) && (eventX <= (x + sweetCatPic.getWidth()/2))) {
+            if (eventY >= (y - sweetCatPic.getHeight() / 2) && (y <= (y + sweetCatPic.getHeight() / 2)) && fleeing) {
+                fleeing = false;
+                scored = true;
+                setY(home.centerY());
                 Log.d(WelcomeActivity.LOG_TAG, "Kitten scored");
             }
         }
