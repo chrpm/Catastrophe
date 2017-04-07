@@ -38,7 +38,7 @@ public class Kitten {
     private boolean fleeing = false;
     private boolean escaped = false;
     private boolean scored = false;
-    private boolean entered = false;
+    private boolean onScreen = false;
 
     private int hitsLeft;
 
@@ -239,11 +239,11 @@ public class Kitten {
         return oldY;
     }
 
-    public boolean hasEntered() {
-        return entered;
+    public boolean onScreen() {
+        return onScreen;
     }
 
-    public void setEntered() {
-        entered = true;
+    public void setOnScreen(boolean on) {
+        onScreen = on;
     }
 }

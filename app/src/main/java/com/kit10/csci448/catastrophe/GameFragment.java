@@ -112,8 +112,8 @@ public class GameFragment extends Fragment {
              //the game is run on a different thread, so it has to send information to the UI thread through this handler
             public void handleMessage(Message msg) {
                 mTime.setText(getTime());
-                //mRemaining.setText(recountKitties());
-                mRemaining.setText("Kittens Remaining: ");
+                mRemaining.setText(recountKitties());
+                //mRemaining.setText(string);
                 //mTime.setText(str);
                 mGameView.update();
             }
@@ -221,39 +221,51 @@ public class GameFragment extends Fragment {
      */
     private void gameLoop() {
         randomFleeing();
-        string = "";
         for (Kitten k : mKitties) {
-            if((k.getY() + (k.getCatHeight() / 2)) < mGameView.getHeight() && (k.getY() - (k.getCatHeight() / 2)) > 0) {
-                if((k.getX() + (k.getCatWidth() / 2)) < mGameView.getWidth() && (k.getX() - (k.getCatWidth() / 2)) > 0) {
-                    k.setEntered();
+            int catHeight = k.getCatHeight();
+            int catWidth = k.getCatWidth();
+            int screenWidth = mGameView.getWidth();
+            int screenHeight = mGameView.getHeight();
+            int catX = k.getX();
+            int catY = k.getY();
+            String tarX = new Integer(k.getTargetX()).toString();
+            String tarY = new Integer(k.getTargetY()).toString();
+            string = tarX + "   " + tarY;
+
+            //Find if the kitten is on the game screen.
+            if((catY + (catHeight / 2) > 0) && (catY - (catHeight / 2) < screenHeight)) {
+                if((catX + (catWidth / 2) > 0) && (catX - (catWidth / 2) < screenWidth)) {
+                    k.setOnScreen(true);
+                    //string = "On Screen";
+                }
+                else {
+                    k.setOnScreen(false);
+                    //string = "Not On Screen";
                 }
             }
-            string = new Integer(k.getHitsLeft()).toString();
-            if(k.hasEntered()) {
-                str = "ENTERED";
+            else {
+                k.setOnScreen(false);
+                //string = "Not On Screen";
             }
+
+
             if (k.isFleeing()) {
                 k.flee();
             }
-            if(k.getHitsLeft() > 0 && k.hasEntered()) {
-                if((k.getY() - (k.getCatHeight() / 2)) <= 0 || (k.getY() + (k.getCatHeight() / 2)) >= mGameView.getHeight()) {
+            if(k.getHitsLeft() > 0 && k.onScreen()) {
+                if((catY - (catHeight / 2) <= 0) || (catY + (catHeight / 2) >= screenHeight)) {
                     k.setTargetY(k.getOldY());
                     k.setTargetX(k.getTargetX() - k.getOldX() + k.getTargetX());
                     k.hit();
                 }
-                else if((k.getX() - (k.getCatWidth() / 2)) <= 0 || (k.getX() + (k.getCatWidth() / 2)) >= mGameView.getWidth()) {
+                else if((catX - (catWidth / 2) <= 0) || (catX + (catWidth / 2) >= screenWidth)) {
                     k.setTargetX(k.getOldX());
                     k.setTargetY(k.getTargetY() - k.getOldY() + k.getTargetY());
                     k.hit();
                 }
             }
             else if(k.getHitsLeft() <= 0){
-                if((k.getY() + (k.getCatHeight() / 2)) <= 0 || (k.getY() - (k.getCatHeight() / 2)) >= mGameView.getHeight()) {
-                    k.setEscaped(true);
-                    k.setFleeing(false);
-
-                }
-                if((k.getX() + (k.getCatWidth() / 2)) <= 0 || (k.getX() - (k.getCatWidth() / 2)) >= mGameView.getWidth()) {
+                if(!k.onScreen()) {
                     k.setEscaped(true);
                     k.setFleeing(false);
 
@@ -296,15 +308,15 @@ public class GameFragment extends Fragment {
     }
 
     public String recountKitties() {
+        int count = 0;
         for(Kitten k : mKitties) {
-
-            if(k.isEscaped()) {
-                mKitties.remove(k);
+            if(k.onScreen()) {
+                count++;
             }
         }
 
-        kittensRemaining = mKitties.size();
-        String remaining = "Kittens Remaining: " + kittensRemaining;
+        String num = new Integer(count).toString();
+        String remaining = "Kittens Remaining: " + num;
         return remaining;
     }
 }
