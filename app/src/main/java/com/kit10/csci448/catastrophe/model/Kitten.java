@@ -23,11 +23,9 @@ public class Kitten {
 
     protected int x;
     protected int y;
-    private int oldX;
-    private int oldY;
+    protected int oldX;
+    protected int oldY;
 
-    protected int targetX;
-    protected int targetY;
     protected Home home;
     protected double speed;
     protected double speedGrowth;
@@ -46,15 +44,12 @@ public class Kitten {
      * @param sweetCatPic : bitmat defining the kitten's texture
      * @param x : x start location
      * @param y : y start location
-     * @param targetX : x target location
-     * @param targetY : y target location
      * @param home : defines the cat's home
      * @param speed : cat's move speed
      * @param speedGrowth : cat's move speed growth per game loop iteration
      */
-    public Kitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, Home home, double speed, double speedGrowth) {
+    public Kitten(Bitmap sweetCatPic, int x, int y, Home home, double speed, double speedGrowth) {
         setCoordinates(x, y);
-        setTargetCoordinates(targetX, targetY);
         this.home = home;
         this.speed = speed;
         this.speedGrowth = speedGrowth;
@@ -116,13 +111,6 @@ public class Kitten {
      * speed : maximum single step move distance; this value must be large enough to prevent significant double->int truncation
      */
     public void move() {
-        oldX = x;
-        oldY = y;
-        double hyp = Math.sqrt(Math.pow((targetX - x), 2.0) + Math.pow((targetY - y), 2.0)); // determine length of hypotenuse
-        speed += speedGrowth;
-        double ratio = speed / hyp;
-        x += (int) (ratio * (targetX - x));
-        y += (int) (ratio * (targetY - y));
 
     }
 
@@ -133,11 +121,6 @@ public class Kitten {
         return sweetCatPic;
     }
 
-
-    public void setTargetCoordinates(int targetX, int targetY) {
-        this.targetX = targetX;
-        this.targetY = targetY;
-    }
     public void setCoordinates(int x, int y) {
         setX(x);
         setY(y);
@@ -212,23 +195,7 @@ public class Kitten {
     }
 
     public void hit() {
-        hitsLeft--;
-    }
-
-    public int getTargetX() {
-        return targetX;
-    }
-
-    public int getTargetY() {
-        return targetY;
-    }
-
-    public void setTargetX(int x) {
-        targetX = x;
-    }
-
-    public void setTargetY(int y) {
-        targetY = y;
+        hitsLeft = hitsLeft - 1;
     }
 
     public int getOldX() {

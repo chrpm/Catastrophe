@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.kit10.csci448.catastrophe.model.Home;
 import com.kit10.csci448.catastrophe.model.Kitten;
+import com.kit10.csci448.catastrophe.model.TargetedKitten;
 import com.kit10.csci448.catastrophe.model.ZigKitten;
 
 import java.util.ArrayList;
@@ -50,6 +51,8 @@ public class GameFragment extends Fragment {
     private long totalPlayTime = 0;
     private TextView mTime;
     private TextView mRemaining;
+
+    int i = 0;
 
     private List<Kitten> mKitties;
     private Home mHome;
@@ -113,7 +116,7 @@ public class GameFragment extends Fragment {
             public void handleMessage(Message msg) {
                 mTime.setText(getTime());
                 mRemaining.setText(recountKitties());
-                //mRemaining.setText(string);
+                mRemaining.setText(string);
                 //mTime.setText(str);
                 mGameView.update();
             }
@@ -199,7 +202,7 @@ public class GameFragment extends Fragment {
         Bitmap kittyPic = BitmapFactory.decodeResource(getResources(), R.drawable.cool_cat);
         for (int i = 0; i < 1; i++) { // TODO: generate kittens on a per-level basis
             int n = rand.nextBoolean() ? -1 : 1; // sets n to either 1 or -1
-            mKitties.add(new Kitten(kittyPic,
+            mKitties.add(new TargetedKitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
                     700, 0,
                     mHome,
@@ -228,9 +231,8 @@ public class GameFragment extends Fragment {
             int screenHeight = mGameView.getHeight();
             int catX = k.getX();
             int catY = k.getY();
-            String tarX = new Integer(k.getTargetX()).toString();
-            String tarY = new Integer(k.getTargetY()).toString();
-            string = tarX + "   " + tarY;
+            String hits = new Integer(k.getHitsLeft()).toString();
+            string = hits;
 
             //Find if the kitten is on the game screen.
             if((catY + (catHeight / 2) > 0) && (catY - (catHeight / 2) < screenHeight)) {
@@ -252,7 +254,36 @@ public class GameFragment extends Fragment {
             if (k.isFleeing()) {
                 k.flee();
             }
-            if(k.getHitsLeft() > 0 && k.onScreen()) {
+
+            //If the cat has already hit the side 3 times and is off screen:
+            if(k.getHitsLeft() <= 0) {
+                if(!k.onScreen()) {
+                    k.setEscaped(true);
+                    k.setFleeing(false);
+                }
+            }
+            else {
+                //If there are hits left and the cat hits the top or bottom.
+                if(((catY - (catHeight / 2)) <= 0) || ((catY + (catHeight / 2)) >= screenHeight)) {
+                    /*
+                    k.setTargetY(k.getOldY());
+                    k.setTargetX(k.getTargetX() - k.getOldX() + k.getTargetX());
+                    */
+                    k.hit();
+                }
+                //If there are hits left and the cat hits the right or left.
+                if(((catX - (catWidth / 2)) <= 0) || ((catX + (catWidth / 2)) >= screenWidth)) {
+                    /*
+                    k.setTargetX(k.getOldX());
+                    k.setTargetY(k.getTargetY() - k.getOldY() + k.getTargetY());
+                    */
+                    k.hit();
+                }
+            }
+            /*if(k.getHitsLeft() > 0 && k.onScreen()) {
+                i++;
+                String eye = new Integer(i).toString();
+                string = eye;
                 if((catY - (catHeight / 2) <= 0) || (catY + (catHeight / 2) >= screenHeight)) {
                     k.setTargetY(k.getOldY());
                     k.setTargetX(k.getTargetX() - k.getOldX() + k.getTargetX());
@@ -271,7 +302,7 @@ public class GameFragment extends Fragment {
 
                 }
 
-            }
+            }*/
 
             if (k.isScored()) {
                 // TODO: update the UI
