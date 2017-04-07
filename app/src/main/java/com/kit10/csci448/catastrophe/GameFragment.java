@@ -111,10 +111,10 @@ public class GameFragment extends Fragment {
         mHandler = new Handler() {
              //the game is run on a different thread, so it has to send information to the UI thread through this handler
             public void handleMessage(Message msg) {
-                //mTime.setText(getTime());
+                mTime.setText(getTime());
                 //mRemaining.setText(recountKitties());
-                mRemaining.setText(string);
-                mTime.setText(str);
+                mRemaining.setText("Kittens Remaining: ");
+                //mTime.setText(str);
                 mGameView.update();
             }
         };
