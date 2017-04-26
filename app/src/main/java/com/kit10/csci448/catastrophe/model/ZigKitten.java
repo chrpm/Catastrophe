@@ -22,8 +22,8 @@ public class ZigKitten extends TargetedKitten {
      * @param zigVariability : defines the range on which the kitten zigzags
      * @param zigProbability : defines the likelihood off the kitten to zigzag per iteration
      */
-    public ZigKitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, Home home, double speed, double speedGrowth, int zigVariability, double zigProbability) {
-        super(sweetCatPic, x, y, targetX, targetY, home, speed, speedGrowth);
+    public ZigKitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, Home home, double stepSize, double stepSizeGrowth, int zigVariability, double zigProbability) {
+        super(sweetCatPic, x, y, targetX, targetY, home, stepSize, stepSizeGrowth);
         zigLeft = new Random().nextBoolean();
         this.zigVariability = zigVariability;
         this.zigProbability = zigProbability;

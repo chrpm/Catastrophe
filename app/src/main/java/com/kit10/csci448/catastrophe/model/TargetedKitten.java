@@ -17,24 +17,31 @@ public class TargetedKitten extends Kitten {
      * @param targetX     : x target location
      * @param targetY     : y target location
      * @param home        : defines the cat's home
-     * @param speed       : cat's move speed
-     * @param speedGrowth : cat's move speed growth per game loop iteration
+     * @param stepSize       : cat's move stepSize
+     * @param stepSizeGrowth : cat's move stepSize growth per game loop iteration
      */
-    public TargetedKitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, Home home, double speed, double speedGrowth) {
-        super(sweetCatPic, x, y, home, speed, speedGrowth);
+    public TargetedKitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, Home home, double stepSize, double stepSizeGrowth) {
+        super(sweetCatPic, x, y, home, stepSize, stepSizeGrowth);
         this.targetX = targetX;
         this.targetY = targetY;
     }
 
-    @Override
+    /* @Override
     public void move() {
         oldX = x;
         oldY = y;
         double hyp = Math.sqrt(Math.pow((targetX - x), 2.0) + Math.pow((targetY - y), 2.0)); // determine length of hypotenuse
-        speed += speedGrowth;
-        double ratio = speed / hyp;
+        stepSize += stepSizeGrowth;
+        double ratio = stepSize / hyp;
         x += (int) (ratio * (targetX - x));
         y += (int) (ratio * (targetY - y));
+    }*/
+
+    protected void setVelocities() {
+        double hyp = Math.sqrt(Math.pow((targetX - x), 2.0) + Math.pow((targetY - y), 2.0)); // determine length of hypotenuse
+        double stepsRequired = hyp / stepSize;
+        velocityX = (targetX - x) / stepsRequired;
+        velocityY = (targetY - y) / stepsRequired;
     }
 
     public void setTargetCoordinates(int targetX, int targetY) {

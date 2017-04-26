@@ -39,10 +39,7 @@ public class GameFragment extends Fragment {
     private ImageButton mOptionsButton;
     private Button mStartButton;
     private LinearLayout mPowerupToolbar;
-    private Boolean play;
     private int kittensRemaining = 0;
-    private String string = "";
-    private String str = "";
 
     private Timer mTimer;
     private TimerTask mTask;
@@ -116,7 +113,7 @@ public class GameFragment extends Fragment {
             public void handleMessage(Message msg) {
                 mTime.setText(getTime());
                 mRemaining.setText(recountKitties());
-                mRemaining.setText(string);
+                mRemaining.setText(Integer.toString(kittensRemaining));
                 //mTime.setText(str);
                 mGameView.update();
             }
@@ -204,15 +201,15 @@ public class GameFragment extends Fragment {
             int n = rand.nextBoolean() ? -1 : 1; // sets n to either 1 or -1
             mKitties.add(new TargetedKitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
-                    700, 0,
+                    700, -100,
                     mHome,
-                    Kitten.DEFAULT_SPEED, Kitten.DEFAULT_SPEED_GROWTH));
+                    Kitten.DEFAULT_STEP_SIZE, Kitten.DEFAULT_STEP_SIZE_GROWTH));
             kittensRemaining++;
             mKitties.add(new ZigKitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
-                    700, 0,
+                    700, -100,
                     mHome,
-                    Kitten.DEFAULT_SPEED, Kitten.DEFAULT_SPEED_GROWTH,
+                    Kitten.DEFAULT_STEP_SIZE, Kitten.DEFAULT_STEP_SIZE_GROWTH,
                     ZigKitten.DEFAULT_VARIABILITY, ZigKitten.DEFAULT_PROBABILiTY));
             kittensRemaining++;
         }
@@ -231,8 +228,6 @@ public class GameFragment extends Fragment {
             int screenHeight = mGameView.getHeight();
             int catX = k.getX();
             int catY = k.getY();
-            String hits = new Integer(k.getHitsLeft()).toString();
-            string = hits;
 
             //Find if the kitten is on the game screen.
             if((catY + (catHeight / 2) > 0) && (catY - (catHeight / 2) < screenHeight)) {

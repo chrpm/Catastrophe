@@ -3,12 +3,9 @@ package com.kit10.csci448.catastrophe.model;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.provider.SyncStateContract;
 import android.util.Log;
 
 import com.kit10.csci448.catastrophe.WelcomeActivity;
-
-import java.util.Random;
 
 /**
  * Created by Adrien on 3/1/2017.
@@ -18,17 +15,21 @@ public class Kitten {
     public static int MAX_PIXEL_X;
     public static int MAX_PIXEL_Y;
 
-    public static final double DEFAULT_SPEED = 5.0;
-    public static final double DEFAULT_SPEED_GROWTH = 0.05;
+    public static final double DEFAULT_STEP_SIZE = 5.0;
+    public static final double DEFAULT_STEP_SIZE_GROWTH = 0.005;
 
     protected int x;
     protected int y;
     protected int oldX;
     protected int oldY;
 
+    protected double velocityX;
+    protected double velocityY;
+
     protected Home home;
-    protected double speed;
-    protected double speedGrowth;
+
+    protected double stepSize;
+    protected double stepSizeGrowth;
 
     private Bitmap sweetCatPic;
     private boolean touched;
@@ -45,16 +46,17 @@ public class Kitten {
      * @param x : x start location
      * @param y : y start location
      * @param home : defines the cat's home
-     * @param speed : cat's move speed
-     * @param speedGrowth : cat's move speed growth per game loop iteration
+     * @param stepSize : cat's move stepSize
+     * @param stepSizeGrowth : cat's move stepSize growth per game loop iteration
      */
-    public Kitten(Bitmap sweetCatPic, int x, int y, Home home, double speed, double speedGrowth) {
+    public Kitten(Bitmap sweetCatPic, int x, int y, Home home, double stepSize, double stepSizeGrowth) {
         setCoordinates(x, y);
         this.home = home;
-        this.speed = speed;
-        this.speedGrowth = speedGrowth;
+        this.stepSize = stepSize;
+        this.stepSizeGrowth = stepSizeGrowth;
         this.sweetCatPic = sweetCatPic;
         hitsLeft = 3;
+        setVelocities();
     }
 
     public void draw(Canvas canvas) {
@@ -108,9 +110,19 @@ public class Kitten {
      *
      * targetX : x coordinate of target location
      * targetY : y coordinate of target location
-     * speed : maximum single step move distance; this value must be large enough to prevent significant double->int truncation
+     * stepSize : maximum single step move distance; this value must be large enough to prevent significant double->int truncation
      */
     public void move() {
+        stepSize *= 1 + stepSizeGrowth;
+        setVelocities();
+        x += velocityX;
+        y += velocityY;
+        if (y <= 0) {
+            setEscaped(true);
+        }
+    }
+
+    protected void setVelocities() {
 
     }
 
