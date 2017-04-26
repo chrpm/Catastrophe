@@ -8,7 +8,7 @@ import java.util.Random;
  * Created by Adrien on 3/30/2017.
  */
 
-public class ZigKitten extends Kitten {
+public class ZigKitten extends TargetedKitten {
     public static final int DEFAULT_VARIABILITY = 1000;
     public static final double DEFAULT_PROBABILiTY = 0.025;
 

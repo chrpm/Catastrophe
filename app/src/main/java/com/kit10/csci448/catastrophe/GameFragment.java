@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.kit10.csci448.catastrophe.model.Home;
 import com.kit10.csci448.catastrophe.model.Kitten;
+import com.kit10.csci448.catastrophe.model.TargetedKitten;
 import com.kit10.csci448.catastrophe.model.ZigKitten;
 
 import java.util.ArrayList;
@@ -50,6 +51,8 @@ public class GameFragment extends Fragment {
     private long totalPlayTime = 0;
     private TextView mTime;
     private TextView mRemaining;
+
+    int i = 0;
 
     private List<Kitten> mKitties;
     private Home mHome;
@@ -111,10 +114,10 @@ public class GameFragment extends Fragment {
         mHandler = new Handler() {
              //the game is run on a different thread, so it has to send information to the UI thread through this handler
             public void handleMessage(Message msg) {
-                //mTime.setText(getTime());
-                //mRemaining.setText(recountKitties());
+                mTime.setText(getTime());
+                mRemaining.setText(recountKitties());
                 mRemaining.setText(string);
-                mTime.setText(str);
+                //mTime.setText(str);
                 mGameView.update();
             }
         };
@@ -199,7 +202,7 @@ public class GameFragment extends Fragment {
         Bitmap kittyPic = BitmapFactory.decodeResource(getResources(), R.drawable.cool_cat);
         for (int i = 0; i < 3; i++) { // TODO: generate kittens on a per-level basis
             int n = rand.nextBoolean() ? -1 : 1; // sets n to either 1 or -1
-            mKitties.add(new Kitten(kittyPic,
+            mKitties.add(new TargetedKitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
                     700, 0,
                     mHome,
@@ -221,49 +224,34 @@ public class GameFragment extends Fragment {
      */
     private void gameLoop() {
         randomFleeing();
-        string = "";
         for (Kitten k : mKitties) {
-            if((k.getY() + (k.getCatHeight() / 2)) < mGameView.getHeight() && (k.getY() - (k.getCatHeight() / 2)) > 0) {
-                if((k.getX() + (k.getCatWidth() / 2)) < mGameView.getWidth() && (k.getX() - (k.getCatWidth() / 2)) > 0) {
-                    k.setEntered();
+            int catHeight = k.getCatHeight();
+            int catWidth = k.getCatWidth();
+            int screenWidth = mGameView.getWidth();
+            int screenHeight = mGameView.getHeight();
+            int catX = k.getX();
+            int catY = k.getY();
+            String hits = new Integer(k.getHitsLeft()).toString();
+            string = hits;
+
+            //Find if the kitten is on the game screen.
+            if((catY + (catHeight / 2) > 0) && (catY - (catHeight / 2) < screenHeight)) {
+                if((catX + (catWidth / 2) > 0) && (catX - (catWidth / 2) < screenWidth)) {
+                    k.setOnScreen(true);
+                    //string = "On Screen";
+                }
+                else {
+                    k.setOnScreen(false);
+                    //string = "Not On Screen";
                 }
             }
-            string = new Integer(k.getHitsLeft()).toString();
-            if(k.hasEntered()) {
-                str = "ENTERED";
+            else {
+                k.setOnScreen(false);
+                //string = "Not On Screen";
             }
+
             if (k.isFleeing()) {
                 k.flee();
-            }
-            /*
-            if(k.getHitsLeft() > 0 && k.hasEntered()) {
-                if((k.getY() - (k.getCatHeight() / 2)) <= 0 || (k.getY() + (k.getCatHeight() / 2)) >= mGameView.getHeight()) {
-                    k.setTargetY(k.getOldY());
-                    k.setTargetX(k.getTargetX() - k.getOldX() + k.getTargetX());
-                    k.hit();
-                }
-                else if((k.getX() - (k.getCatWidth() / 2)) <= 0 || (k.getX() + (k.getCatWidth() / 2)) >= mGameView.getWidth()) {
-                    k.setTargetX(k.getOldX());
-                    k.setTargetY(k.getTargetY() - k.getOldY() + k.getTargetY());
-                    k.hit();
-                }
-            }
-            else if(k.getHitsLeft() <= 0){
-                if((k.getY() + (k.getCatHeight() / 2)) <= 0 || (k.getY() - (k.getCatHeight() / 2)) >= mGameView.getHeight()) {
-                    k.setEscaped(true);
-                    k.setFleeing(false);
-
-                }
-                if((k.getX() + (k.getCatWidth() / 2)) <= 0 || (k.getX() - (k.getCatWidth() / 2)) >= mGameView.getWidth()) {
-                    k.setEscaped(true);
-                    k.setFleeing(false);
-
-                }
-            }*/
-
-            if (k.getY() <= 0) {
-                k.setEscaped(true);
-                k.setFleeing(false);
             }
 
             if (k.isScored()) {
@@ -301,15 +289,15 @@ public class GameFragment extends Fragment {
     }
 
     public String recountKitties() {
+        int count = 0;
         for(Kitten k : mKitties) {
-
-            if(k.isEscaped()) {
-                mKitties.remove(k);
+            if(k.onScreen()) {
+                count++;
             }
         }
 
-        kittensRemaining = mKitties.size();
-        String remaining = "Kittens Remaining: " + kittensRemaining;
+        String num = new Integer(count).toString();
+        String remaining = "Kittens Remaining: " + num;
         return remaining;
     }
 }
