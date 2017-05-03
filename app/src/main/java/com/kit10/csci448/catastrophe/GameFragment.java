@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.kit10.csci448.catastrophe.model.Home;
 import com.kit10.csci448.catastrophe.model.Kitten;
+import com.kit10.csci448.catastrophe.model.Sound;
 import com.kit10.csci448.catastrophe.model.SoundBox;
 import com.kit10.csci448.catastrophe.model.TargetedKitten;
 import com.kit10.csci448.catastrophe.model.ZigKitten;
@@ -37,6 +38,10 @@ import java.util.TimerTask;
 
 public class GameFragment extends Fragment {
     private SoundBox mSoundBox;
+    private Sound mStartSound;
+    private List<Sound> mSounds;
+    private List<Sound> mHappyShortSounds;
+    private List<Sound> mPurrSounds;
     public final double HOME_SIZE_PERCENTAGE = 0.3;
 
     private GameView mGameView;
@@ -83,6 +88,10 @@ public class GameFragment extends Fragment {
         super.onCreate(savedInstanceState);
         View v = inflater.inflate(R.layout.activity_game, container, false);
 
+        mStartSound = mSoundBox.getStartSound();
+        mPurrSounds = mSoundBox.getPurrSounds();
+        mHappyShortSounds = mSoundBox.getShortHappySounds();
+
         mGameView = (GameView) v.findViewById(R.id.canvas_view);
         mKitties = new ArrayList<>();
         Bitmap homePic = BitmapFactory.decodeResource(getResources(), R.drawable.home); // get the home image
@@ -117,6 +126,7 @@ public class GameFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mStartButton.setVisibility(View.GONE); // makes the start button invisible
+                mSoundBox.play(mStartSound);
                 // TODO: we may want to disable everything before this button is pressed (excluding the options button)
                 startGame();
             }
@@ -308,13 +318,13 @@ public class GameFragment extends Fragment {
         return remaining;
     }
 
-    /*@Override
+    @Override
     public void onDestroy() {
         super.onDestroy();
         mSoundBox.release();
     }
 
-    private class SoundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    /*private class SoundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private Button mButton;
         private Sound mSound;
 

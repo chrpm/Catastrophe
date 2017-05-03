@@ -24,6 +24,7 @@ public class SoundBox {
     private List<Sound> mSounds;
     private List<Sound> mPurrSounds;
     private List<Sound> mShortHappySounds;
+    private Sound startSound;
     private static final int MAX_SOUNDS = 5;    //Maybe make is so every visible cat can have a sound.
     private SoundPool mSoundPool;
     private AssetManager mAssets;
@@ -49,6 +50,10 @@ public class SoundBox {
 
     public List<Sound> getSounds() {
         return mSounds;
+    }
+
+    public Sound getStartSound() {
+        return startSound;
     }
 
     public List<Sound> getPurrSounds() {
@@ -107,6 +112,13 @@ public class SoundBox {
                 Log.e(TAG, "Could not load sound " + filename, ioe);
             }
 
+        }
+
+        try {
+            startSound = new Sound(SOUNDS_FOLDER + "/pissy_cat.wav");
+            load(startSound);
+        } catch (IOException ioe) {
+            Log.e(TAG, "Could not load sound startSound", ioe);
         }
 
 
