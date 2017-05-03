@@ -96,7 +96,7 @@ public class GameFragment extends Fragment {
         mTime.setText("Time: 0:00");
 
         mRemaining = (TextView)v.findViewById(R.id.remaining);
-        mRemaining.setText("Kittens Remaining: 0");
+        mRemaining.setText("Score: 0");
 
 
         mStartButton = (Button) v.findViewById(R.id.start_button);
@@ -295,4 +295,9 @@ public class GameFragment extends Fragment {
         String remaining = "Kittens Remaining: " + num;
         return remaining;
     }
+
+
+
+
+
 }
