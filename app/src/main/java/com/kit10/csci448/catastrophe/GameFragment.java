@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 
 import com.kit10.csci448.catastrophe.model.Home;
 import com.kit10.csci448.catastrophe.model.Kitten;
+import com.kit10.csci448.catastrophe.model.SoundBox;
 import com.kit10.csci448.catastrophe.model.TargetedKitten;
 import com.kit10.csci448.catastrophe.model.ZigKitten;
 
@@ -33,6 +36,7 @@ import java.util.TimerTask;
  */
 
 public class GameFragment extends Fragment {
+    private SoundBox mSoundBox;
     public final double HOME_SIZE_PERCENTAGE = 0.3;
 
     private GameView mGameView;
@@ -47,7 +51,7 @@ public class GameFragment extends Fragment {
     private long startTime;
     private long totalPlayTime = 0;
     private TextView mTime;
-    private TextView mRemaining;
+    private TextView mScore;
 
     int i = 0;
 
@@ -64,8 +68,17 @@ public class GameFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        mSoundBox = new SoundBox(getActivity());
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         Log.d(WelcomeActivity.LOG_TAG, "GameFragment : onCreateView");
         super.onCreate(savedInstanceState);
         View v = inflater.inflate(R.layout.activity_game, container, false);
@@ -95,8 +108,8 @@ public class GameFragment extends Fragment {
         mTime = (TextView)v.findViewById(R.id.time);
         mTime.setText("Time: 0:00");
 
-        mRemaining = (TextView)v.findViewById(R.id.remaining);
-        mRemaining.setText("Score: 0");
+        mScore = (TextView)v.findViewById(R.id.remaining);
+        mScore.setText("Score: 0");
 
 
         mStartButton = (Button) v.findViewById(R.id.start_button);
@@ -112,9 +125,8 @@ public class GameFragment extends Fragment {
              //the game is run on a different thread, so it has to send information to the UI thread through this handler
             public void handleMessage(Message msg) {
                 mTime.setText(getTime());
-                mRemaining.setText(recountKitties());
-                mRemaining.setText(Integer.toString(kittensRemaining));
-                //mTime.setText(str);
+                //mScore.setText(recountKitties());
+                //mScore.setText(Integer.toString(kittensRemaining));
                 mGameView.update();
             }
         };
@@ -296,7 +308,57 @@ public class GameFragment extends Fragment {
         return remaining;
     }
 
+    /*@Override
+    public void onDestroy() {
+        super.onDestroy();
+        mSoundBox.release();
+    }
 
+    private class SoundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private Button mButton;
+        private Sound mSound;
+
+        public SoundHolder(LayoutInflater inflater, ViewGroup container) {
+            super(inflater.inflate(R.layout.list_item_sound, container, false));
+            mButton = (Button)itemView.findViewById(R.id.button);
+            mButton.setOnClickListener(this);
+        }
+
+        public void bindSound(Sound sound) {
+            mSound = sound;
+            mButton.setText(mSound.getName());
+        }
+
+        @Override
+        public void onClick(View v) {
+            mBeatBox.play(mSound);
+        }
+    }
+
+    private class SoundAdapter extends RecyclerView.Adapter<SoundHolder> {
+        private List<Sound> mSounds;
+
+        public SoundAdapter(List<Sound> sounds) {
+            mSounds = sounds;
+        }
+
+        @Override
+        public SoundHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(getActivity());
+            return new SoundHolder(inflater, parent);
+        }
+
+        @Override
+        public void onBindViewHolder(SoundHolder soundHolder, int position) {
+            Sound sound = mSounds.get(position);
+            soundHolder.bindSound(sound);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mSounds.size();
+        }
+    }*/
 
 
 

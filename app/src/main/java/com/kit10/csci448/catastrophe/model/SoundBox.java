@@ -19,7 +19,11 @@ public class SoundBox {
 
     private static final String TAG = "SoundBox";
     private static final String SOUNDS_FOLDER = "cat_sounds";
+    private static final String SHORT_HAPPY_SOUNDS_FOLDER = "short_happy_sounds";
+    private static final String PURR_SOUNDS_FOLDER = "purr_sounds";
     private List<Sound> mSounds;
+    private List<Sound> mPurrSounds;
+    private List<Sound> mShortHappySounds;
     private static final int MAX_SOUNDS = 5;    //Maybe make is so every visible cat can have a sound.
     private SoundPool mSoundPool;
     private AssetManager mAssets;
@@ -42,10 +46,20 @@ public class SoundBox {
         mSoundPool.release();
     }
 
+
     public List<Sound> getSounds() {
         return mSounds;
     }
 
+    public List<Sound> getPurrSounds() {
+        return mPurrSounds;
+    }
+
+    public List<Sound> getShortHappySounds() {
+        return mShortHappySounds;
+    }
+
+    //Load all sounds and load different types of sounds into different lists.
     private void loadSounds() {
         String[] soundNames;
         try {
@@ -68,6 +82,34 @@ public class SoundBox {
             }
 
         }
+
+        mShortHappySounds = new ArrayList<Sound>();
+        for (String filename : soundNames) {
+            try {
+                String assetPath = SHORT_HAPPY_SOUNDS_FOLDER + "/" + filename;
+                Sound sound = new Sound(assetPath);
+                load(sound);
+                mShortHappySounds.add(sound);
+            } catch (IOException ioe) {
+                Log.e(TAG, "Could not load sound " + filename, ioe);
+            }
+
+        }
+
+        mPurrSounds = new ArrayList<Sound>();
+        for (String filename : soundNames) {
+            try {
+                String assetPath = PURR_SOUNDS_FOLDER + "/" + filename;
+                Sound sound = new Sound(assetPath);
+                load(sound);
+                mPurrSounds.add(sound);
+            } catch (IOException ioe) {
+                Log.e(TAG, "Could not load sound " + filename, ioe);
+            }
+
+        }
+
+
     }
 
     private void load(Sound sound) throws IOException {
