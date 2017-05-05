@@ -18,10 +18,10 @@ public class Kitten {
     public static final double DEFAULT_STEP_SIZE = 5.0;
     public static final double DEFAULT_STEP_SIZE_GROWTH = 0.005;
 
-    protected int x;
-    protected int y;
-    protected int oldX;
-    protected int oldY;
+    protected float x;
+    protected float y;
+    protected float oldX;
+    protected float oldY;
 
     protected double velocityX;
     protected double velocityY;
@@ -32,12 +32,12 @@ public class Kitten {
     protected double stepSizeGrowth;
 
     private Bitmap sweetCatPic;
-    private boolean touched;
 
-    private boolean fleeing = false;
-    private boolean escaped = false;
-    private boolean scored = false;
-    private boolean onScreen = false;
+    public enum State {
+      FLEEING, HELD, ESCAPED, SCORED
+    };
+
+    private State state;
 
     private int hitsLeft;
 
@@ -49,7 +49,7 @@ public class Kitten {
      * @param stepSize : cat's move stepSize
      * @param stepSizeGrowth : cat's move stepSize growth per game loop iteration
      */
-    public Kitten(Bitmap sweetCatPic, int x, int y, Home home, double stepSize, double stepSizeGrowth) {
+    public Kitten(Bitmap sweetCatPic, float x, float y, Home home, double stepSize, double stepSizeGrowth) {
         setCoordinates(x, y);
         this.home = home;
         this.stepSize = stepSize;
@@ -60,31 +60,28 @@ public class Kitten {
     }
 
     public void draw(Canvas canvas) {
-        if(isEscaped()){
+        if(state == State.ESCAPED){
             return;
         }
         canvas.drawBitmap(sweetCatPic, x - (sweetCatPic.getWidth() / 2), y - (sweetCatPic.getHeight() / 2), null);
     }
 
-    public void handleActionDown(int eventX, int eventY) {
+    public void handleActionDown(float eventX, float eventY) {
         if (eventX >= (x - sweetCatPic.getWidth() / 2) && (eventX <= (x + sweetCatPic.getWidth()/2))) {
-            if (eventY >= (y - sweetCatPic.getHeight() / 2) && (y <= (y + sweetCatPic.getHeight() / 2)) && fleeing) {
+            if (eventY >= (y - sweetCatPic.getHeight() / 2) && (y <= (y + sweetCatPic.getHeight() / 2)) && state == State.FLEEING) {
                 // Cat picture has been touched
-                setTouched(true);
+                state = State.HELD;
             } else {
-                setTouched(false);
+                state = State.FLEEING;
             }
-        } else {
-            setTouched(false);
         }
     }
 
-    public void handleActionUp(int eventX, int eventY) {
-        if (touched) {
+    public void handleActionUp(float eventX, float eventY) {
+        if (state == State.HELD) {
             // check if the kitten is inside the home box when dropped
             if ((eventX <= home.rightX() && eventX >= home.leftX()) && (eventY <= home.bottomY() && eventY >= home.topY())) {
-                fleeing = false;
-                scored = true;
+                state = State.SCORED;
                 Log.d(WelcomeActivity.LOG_TAG, "Kitten scored");
             }
         }
@@ -92,9 +89,8 @@ public class Kitten {
 
     public void handleActionFlung(float eventX, float eventY) {
         if (eventX >= (x - sweetCatPic.getWidth() / 2) && (eventX <= (x + sweetCatPic.getWidth()/2))) {
-            if (eventY >= (y - sweetCatPic.getHeight() / 2) && (y <= (y + sweetCatPic.getHeight() / 2)) && fleeing) {
-                fleeing = false;
-                scored = true;
+            if (eventY >= (y - sweetCatPic.getHeight() / 2) && (y <= (y + sweetCatPic.getHeight() / 2)) && state == State.FLEEING) {
+                state = State.SCORED;
                 setY(home.centerY());
                 Log.d(WelcomeActivity.LOG_TAG, "Kitten scored");
             }
@@ -118,7 +114,7 @@ public class Kitten {
         x += velocityX;
         y += velocityY;
         if (y <= 0) {
-            setEscaped(true);
+            state = State.ESCAPED;
         }
     }
 
@@ -133,57 +129,29 @@ public class Kitten {
         return sweetCatPic;
     }
 
-    public void setCoordinates(int x, int y) {
+    public void setCoordinates(float x, float y) {
         setX(x);
         setY(y);
     }
 
-    public void setX(int x) {
+    public void setX(float x) {
         this.x = x;
     }
     public void setRelativeX(double relativeX) {
         this.x = (int) (MAX_PIXEL_X * relativeX);
     }
-    public int getX() {
+    public float getX() {
         return x;
     }
 
-    public void setY(int y) {
+    public void setY(float y) {
         this.y = y;
     }
     public void setRelativeY(double relativeY) {
         this.y = (int) (MAX_PIXEL_Y * relativeY);
     }
-    public int getY() {
+    public float getY() {
         return y;
-    }
-
-    public void setTouched(boolean touched) {
-        this.touched = touched;
-    }
-    public boolean isTouched() {
-        return touched;
-    }
-
-    public boolean isFleeing() {
-        return fleeing;
-    }
-    public void setFleeing(boolean fleeing) {
-        this.fleeing = fleeing;
-    }
-
-    public boolean isEscaped() {
-        return escaped;
-    }
-    public void setEscaped(boolean escaped) {
-        this.escaped = escaped;
-    }
-
-    public boolean isScored() {
-        return scored;
-    }
-    public void setScored(boolean scored) {
-        this.scored = scored;
     }
 
     public static int getScreenWidth() {
@@ -194,35 +162,19 @@ public class Kitten {
         return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
+
     public int getCatWidth() {
         return sweetCatPic.getWidth();
     }
 
     public int getCatHeight() {
         return sweetCatPic.getHeight();
-    }
-
-    public int getHitsLeft() {
-        return hitsLeft;
-    }
-
-    public void hit() {
-        hitsLeft = hitsLeft - 1;
-    }
-
-    public int getOldX() {
-        return oldX;
-    }
-
-    public int getOldY() {
-        return oldY;
-    }
-
-    public boolean onScreen() {
-        return onScreen;
-    }
-
-    public void setOnScreen(boolean on) {
-        onScreen = on;
     }
 }

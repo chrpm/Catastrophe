@@ -63,28 +63,15 @@ public class GameView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        this.mDetector.onTouchEvent(event);
+
         float x = event.getX();
         float y = event.getY();
 
         switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                for (Kitten k : mKitties) {
-                    k.handleActionDown((int)x, (int)y);
-                }
-                break;
-            case MotionEvent.ACTION_MOVE:
-                for (Kitten k : mKitties) {
-                    if (k.isTouched()) {
-                        // kitten is being moved
-                        k.setCoordinates((int) x, (int) y);
-                    }
-                }
-
-                break;
             case MotionEvent.ACTION_UP:
                 for (Kitten k : mKitties) {
-                    k.handleActionUp((int) x, (int) y);
-                    k.setTouched(false);
+                    k.handleActionUp(x, y);
                 }
                 break;
         }
@@ -126,16 +113,35 @@ public class GameView extends View {
     class GameGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final String DEBUG_TAG = "GameView Gestures";
 
-        /*
         @Override
         public boolean onDown(MotionEvent event) {
             Log.d(DEBUG_TAG,"onDown: " + event.toString());
             for (Kitten k : mKitties) {
-                k.handleActionDown((int) event.getX(), (int) event.getY());
+                k.handleActionDown(event.getX(), event.getY());
             }
             return true;
         }
-        */
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent event) {
+            Log.d(DEBUG_TAG, "onSingleTapConfirmed: " + event.toString());
+            return true;
+        }
+
+
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            Log.d(DEBUG_TAG,"onScroll");
+            for (Kitten k : mKitties) {
+                if (k.getState() == Kitten.State.HELD) {
+                    // kitten is being moved
+                    k.setCoordinates(e2.getX(), e2.getY());
+                }
+            }
+            return true;
+        }
+
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,float velocityY) {
@@ -144,7 +150,7 @@ public class GameView extends View {
                     " Y POS: " + Float.toString(e1.getX()) +
                     " X VEL: " + Float.toString(velocityX) +
                     " Y VEL: " + Float.toString(velocityY));
-            if (velocityY > 10000){
+            if (velocityY > 100){
                 Log.d("Fling", "Nice downswipe");
                 for (Kitten k : mKitties) {
                     k.handleActionFlung(e1.getX(), e1.getY());

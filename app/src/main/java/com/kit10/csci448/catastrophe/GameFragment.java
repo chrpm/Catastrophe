@@ -248,30 +248,30 @@ public class GameFragment extends Fragment {
             int catWidth = k.getCatWidth();
             int screenWidth = mGameView.getWidth();
             int screenHeight = mGameView.getHeight();
-            int catX = k.getX();
-            int catY = k.getY();
+            float catX = k.getX();
+            float catY = k.getY();
 
             //Find if the kitten is on the game screen.
             if((catY + (catHeight / 2) > 0) && (catY - (catHeight / 2) < screenHeight)) {
                 if((catX + (catWidth / 2) > 0) && (catX - (catWidth / 2) < screenWidth)) {
-                    k.setOnScreen(true);
+                    // k.setOnScreen(true);
                     //string = "On Screen";
                 }
                 else {
-                    k.setOnScreen(false);
+                    // k.setOnScreen(false);
                     //string = "Not On Screen";
                 }
             }
             else {
-                k.setOnScreen(false);
+                // k.setOnScreen(false);
                 //string = "Not On Screen";
             }
 
-            if (k.isFleeing()) {
+            if (k.getState() == Kitten.State.FLEEING) {
                 k.flee();
             }
 
-            if (k.isScored()) {
+            if (k.getState() == Kitten.State.SCORED) {
                 // TODO: update the UI
             }
         }
@@ -288,7 +288,7 @@ public class GameFragment extends Fragment {
         Random rand = new Random();
         for (Kitten k : mKitties) {
             if (rand.nextDouble() <= fleeProbability) {
-                k.setFleeing(true);
+                k.setState(Kitten.State.FLEEING);
             }
         }
     }
@@ -308,9 +308,9 @@ public class GameFragment extends Fragment {
     public String recountKitties() {
         int count = 0;
         for(Kitten k : mKitties) {
-            if(k.onScreen()) {
+            /* if(k.onScreen()) {
                 count++;
-            }
+            }*/
         }
 
         String num = new Integer(count).toString();
