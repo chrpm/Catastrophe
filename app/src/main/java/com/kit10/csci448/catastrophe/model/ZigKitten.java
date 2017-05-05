@@ -31,7 +31,7 @@ public class ZigKitten extends TargetedKitten {
     }
 
     @Override
-    public void move() {
+    public void flee() {
         if (new Random().nextDouble() <= zigProbability) {
             zigLeft = !zigLeft;
         }

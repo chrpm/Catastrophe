@@ -38,10 +38,13 @@ public class TargetedKitten extends Kitten {
     }*/
 
     protected void setVelocities() {
-        double hyp = Math.sqrt(Math.pow((targetX - x), 2.0) + Math.pow((targetY - y), 2.0)); // determine length of hypotenuse
-        double stepsRequired = hyp / stepSize;
-        velocityX = (targetX - x) / stepsRequired;
-        velocityY = (targetY - y) / stepsRequired;
+        super.setVelocities();
+        if (state == State.FLEEING) {
+            double hyp = Math.sqrt(Math.pow((targetX - x), 2.0) + Math.pow((targetY - y), 2.0)); // determine length of hypotenuse
+            double stepsRequired = hyp / stepSize;
+            velocityX = (targetX - x) / stepsRequired;
+            velocityY = (targetY - y) / stepsRequired;
+        }
     }
 
     public void setTargetCoordinates(int targetX, int targetY) {

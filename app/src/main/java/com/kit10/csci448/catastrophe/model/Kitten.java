@@ -12,11 +12,11 @@ import com.kit10.csci448.catastrophe.WelcomeActivity;
  */
 
 public class Kitten {
-    public static int MAX_PIXEL_X;
-    public static int MAX_PIXEL_Y;
+    public static final String TAG = "Kitten";
 
-    public static final double DEFAULT_STEP_SIZE = 5.0;
-    public static final double DEFAULT_STEP_SIZE_GROWTH = 0.005;
+    public static final float DEFAULT_STEP_SIZE = 5.0f;
+    public static final float DEFAULT_STEP_SIZE_GROWTH = 0.001f;
+    public static final float FLING_DECELLERATION = 0.2f;
 
     protected float x;
     protected float y;
@@ -34,12 +34,10 @@ public class Kitten {
     private Bitmap sweetCatPic;
 
     public enum State {
-      FLEEING, HELD, ESCAPED, SCORED
+      FLEEING, HELD, ESCAPED, HOME, LAUNCHED
     };
 
-    private State state;
-
-    private int hitsLeft;
+    protected State state = State.HOME;
 
     /**
      * @param sweetCatPic : bitmat defining the kitten's texture
@@ -55,7 +53,6 @@ public class Kitten {
         this.stepSize = stepSize;
         this.stepSizeGrowth = stepSizeGrowth;
         this.sweetCatPic = sweetCatPic;
-        hitsLeft = 3;
         setVelocities();
     }
 
@@ -66,39 +63,40 @@ public class Kitten {
         canvas.drawBitmap(sweetCatPic, x - (sweetCatPic.getWidth() / 2), y - (sweetCatPic.getHeight() / 2), null);
     }
 
-    public void handleActionDown(float eventX, float eventY) {
+    boolean selected(float eventX, float eventY) {
         if (eventX >= (x - sweetCatPic.getWidth() / 2) && (eventX <= (x + sweetCatPic.getWidth()/2))) {
-            if (eventY >= (y - sweetCatPic.getHeight() / 2) && (y <= (y + sweetCatPic.getHeight() / 2)) && state == State.FLEEING) {
-                // Cat picture has been touched
-                state = State.HELD;
-            } else {
-                state = State.FLEEING;
+            if (eventY >= (y - sweetCatPic.getHeight() / 2) && (y <= (y + sweetCatPic.getHeight() / 2))) {
+                return true;
             }
         }
+        return false;
     }
 
-    public void handleActionUp(float eventX, float eventY) {
-        if (state == State.HELD) {
-            // check if the kitten is inside the home box when dropped
-            if ((eventX <= home.rightX() && eventX >= home.leftX()) && (eventY <= home.bottomY() && eventY >= home.topY())) {
-                state = State.SCORED;
-                Log.d(WelcomeActivity.LOG_TAG, "Kitten scored");
-            }
-        }
-    }
-
-    public void handleActionFlung(float eventX, float eventY) {
-        if (eventX >= (x - sweetCatPic.getWidth() / 2) && (eventX <= (x + sweetCatPic.getWidth()/2))) {
-            if (eventY >= (y - sweetCatPic.getHeight() / 2) && (y <= (y + sweetCatPic.getHeight() / 2)) && state == State.FLEEING) {
-                state = State.SCORED;
-                setY(home.centerY());
-                Log.d(WelcomeActivity.LOG_TAG, "Kitten scored");
-            }
+    public void performMovement() {
+        switch (state) {
+            case FLEEING:
+                flee();
+                break;
+            case LAUNCHED:
+                launched();
+                break;
         }
     }
 
     public void flee() {
         move();
+    }
+
+    public void launched() {
+        move();
+
+        velocityX -= FLING_DECELLERATION * ((velocityX > 0) ? 1 : -1);
+        velocityY -= FLING_DECELLERATION * ((velocityY > 0) ? 1 : -1);
+
+        Log.d(TAG, String.format("velocityX: %f, velocityY: %f", velocityX, velocityY));
+        if (velocityX <= FLING_DECELLERATION && velocityY <= FLING_DECELLERATION) {
+            state = State.FLEEING;
+        }
     }
 
     /**
@@ -109,17 +107,45 @@ public class Kitten {
      * stepSize : maximum single step move distance; this value must be large enough to prevent significant double->int truncation
      */
     public void move() {
-        stepSize *= 1 + stepSizeGrowth;
         setVelocities();
         x += velocityX;
         y += velocityY;
-        if (y <= 0) {
+        if (y <= -1 * getCatHeight()) {
             state = State.ESCAPED;
         }
     }
 
     protected void setVelocities() {
 
+    }
+
+    public void handleActionDown(float eventX, float eventY) {
+        if (selected(eventX, eventY)) {
+            // Cat picture has been touched
+            state = State.HELD;
+        }
+    }
+
+    public void handleActionUp(float eventX, float eventY) {
+        if (state == State.HELD) {
+            // check if the kitten is inside the home box when dropped
+            if ((eventX <= home.rightX() && eventX >= home.leftX()) && (eventY <= home.bottomY() && eventY >= home.topY())) {
+                state = State.HOME;
+                Log.d(TAG, "Kitten scored");
+            }
+            else {
+                state = State.FLEEING;
+            }
+        }
+    }
+
+    public void handleActionFlung(float eventX, float eventY, float velocityX, float velocityY) {
+        if (selected(eventX, eventY) && (state == State.FLEEING || state == State.HELD)) {
+            Log.d(TAG, "Kitten flung");
+            state = State.LAUNCHED;
+            this.velocityX = velocityX / 500;
+            this.velocityY = velocityY / 500;
+        }
     }
 
     public void setSweetCatPic(Bitmap sweetCatPic) {
@@ -138,7 +164,7 @@ public class Kitten {
         this.x = x;
     }
     public void setRelativeX(double relativeX) {
-        this.x = (int) (MAX_PIXEL_X * relativeX);
+        this.x = (int) (getScreenWidth() * relativeX);
     }
     public float getX() {
         return x;
@@ -148,7 +174,7 @@ public class Kitten {
         this.y = y;
     }
     public void setRelativeY(double relativeY) {
-        this.y = (int) (MAX_PIXEL_Y * relativeY);
+        this.y = (int) (getScreenHeight() * relativeY);
     }
     public float getY() {
         return y;

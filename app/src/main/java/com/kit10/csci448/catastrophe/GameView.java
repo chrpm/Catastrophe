@@ -19,6 +19,8 @@ import java.util.List;
  * Created with help from JavaCodeGeeks CanvasView example
  */
 public class GameView extends View {
+    private static final String TAG = "GameView";
+
     private Context context;
     public int width;
     public int height;
@@ -111,11 +113,11 @@ public class GameView extends View {
     }
 
     class GameGestureListener extends GestureDetector.SimpleOnGestureListener {
-        private static final String DEBUG_TAG = "GameView Gestures";
+        private static final String GESTURE_TAG = "GameView.Gestures";
 
         @Override
         public boolean onDown(MotionEvent event) {
-            Log.d(DEBUG_TAG,"onDown: " + event.toString());
+            Log.d(GESTURE_TAG,"onDown: " + event.toString());
             for (Kitten k : mKitties) {
                 k.handleActionDown(event.getX(), event.getY());
             }
@@ -124,7 +126,7 @@ public class GameView extends View {
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent event) {
-            Log.d(DEBUG_TAG, "onSingleTapConfirmed: " + event.toString());
+            Log.d(GESTURE_TAG, "onSingleTapConfirmed: " + event.toString());
             return true;
         }
 
@@ -132,7 +134,7 @@ public class GameView extends View {
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            Log.d(DEBUG_TAG,"onScroll");
+            Log.d(GESTURE_TAG,"onScroll");
             for (Kitten k : mKitties) {
                 if (k.getState() == Kitten.State.HELD) {
                     // kitten is being moved
@@ -145,16 +147,14 @@ public class GameView extends View {
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,float velocityY) {
-            Log.d("Fling", "FLUNG" +
+            Log.d(GESTURE_TAG, "FLUNG" +
                     " X POS: " + Float.toString(e1.getY()) +
                     " Y POS: " + Float.toString(e1.getX()) +
                     " X VEL: " + Float.toString(velocityX) +
                     " Y VEL: " + Float.toString(velocityY));
-            if (velocityY > 100){
-                Log.d("Fling", "Nice downswipe");
-                for (Kitten k : mKitties) {
-                    k.handleActionFlung(e1.getX(), e1.getY());
-                }
+            Log.d(GESTURE_TAG, "Nice downswipe");
+            for (Kitten k : mKitties) {
+                k.handleActionFlung(e2.getX(), e2.getY(), velocityX, velocityY);
             }
             return true;
         }

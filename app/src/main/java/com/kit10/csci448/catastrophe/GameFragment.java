@@ -11,8 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -95,11 +93,7 @@ public class GameFragment extends Fragment {
         mGameView = (GameView) v.findViewById(R.id.canvas_view);
         mKitties = new ArrayList<>();
         Bitmap homePic = BitmapFactory.decodeResource(getResources(), R.drawable.home); // get the home image
-        /*
-        TODO: soft-code this line;
-        TODO: the home should be placed at the bottom center of the screen, regardless of hardware/screen size
-        TODO: the home's dimensions should reflect the size of the bitmap
-        */
+
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int screenHeight = displayMetrics.heightPixels;
@@ -223,13 +217,13 @@ public class GameFragment extends Fragment {
             int n = rand.nextBoolean() ? -1 : 1; // sets n to either 1 or -1
             mKitties.add(new TargetedKitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
-                    700, -100,
+                    700, -1000,
                     mHome,
                     Kitten.DEFAULT_STEP_SIZE, Kitten.DEFAULT_STEP_SIZE_GROWTH));
             kittensRemaining++;
             mKitties.add(new ZigKitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
-                    700, -100,
+                    700, -1000,
                     mHome,
                     Kitten.DEFAULT_STEP_SIZE, Kitten.DEFAULT_STEP_SIZE_GROWTH,
                     ZigKitten.DEFAULT_VARIABILITY, ZigKitten.DEFAULT_PROBABILiTY));
@@ -267,11 +261,9 @@ public class GameFragment extends Fragment {
                 //string = "Not On Screen";
             }
 
-            if (k.getState() == Kitten.State.FLEEING) {
-                k.flee();
-            }
+            k.performMovement();
 
-            if (k.getState() == Kitten.State.SCORED) {
+            if (k.getState() == Kitten.State.HOME) {
                 // TODO: update the UI
             }
         }
@@ -287,7 +279,7 @@ public class GameFragment extends Fragment {
         double fleeProbability = 0.005;
         Random rand = new Random();
         for (Kitten k : mKitties) {
-            if (rand.nextDouble() <= fleeProbability) {
+            if ((k.getState() == Kitten.State.HOME) && rand.nextDouble() <= fleeProbability) {
                 k.setState(Kitten.State.FLEEING);
             }
         }
