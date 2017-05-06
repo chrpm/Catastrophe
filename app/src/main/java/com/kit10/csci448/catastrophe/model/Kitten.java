@@ -63,13 +63,17 @@ public class Kitten {
         canvas.drawBitmap(sweetCatPic, x - (sweetCatPic.getWidth() / 2), y - (sweetCatPic.getHeight() / 2), null);
     }
 
-    boolean selected(float eventX, float eventY) {
+    public boolean selected(float eventX, float eventY) {
         if (eventX >= (x - sweetCatPic.getWidth() / 2) && (eventX <= (x + sweetCatPic.getWidth()/2))) {
             if (eventY >= (y - sweetCatPic.getHeight() / 2) && (y <= (y + sweetCatPic.getHeight() / 2))) {
                 return true;
             }
         }
         return false;
+    }
+
+    public boolean atHome() {
+        return (x <= home.rightX() && x >= home.leftX()) && (y <= home.bottomY() && y >= home.topY());
     }
 
     public void performMovement() {
@@ -94,8 +98,14 @@ public class Kitten {
         velocityY -= FLING_DECELLERATION * ((velocityY > 0) ? 1 : -1);
 
         Log.d(TAG, String.format("velocityX: %f, velocityY: %f", velocityX, velocityY));
-        if (velocityX <= FLING_DECELLERATION && velocityY <= FLING_DECELLERATION) {
-            state = State.FLEEING;
+        if (Math.abs(velocityX) <= FLING_DECELLERATION && Math.abs(velocityY) <= FLING_DECELLERATION) {
+            if (atHome()) {
+                state = State.HOME;
+                Log.d(TAG, "Kitten scored");
+            }
+            else {
+                state = State.FLEEING;
+            }
         }
     }
 
@@ -116,7 +126,15 @@ public class Kitten {
     }
 
     protected void setVelocities() {
-
+        if (x <= 0) {
+            velocityX = Math.abs(velocityX);
+        }
+        else if (x >= getScreenWidth()) {
+            velocityX = -1 * Math.abs(velocityX);
+        }
+        if (y >= getScreenHeight()) {
+            velocityY = -1 * Math.abs(velocityY);
+        }
     }
 
     public void handleActionDown(float eventX, float eventY) {
@@ -129,7 +147,7 @@ public class Kitten {
     public void handleActionUp(float eventX, float eventY) {
         if (state == State.HELD) {
             // check if the kitten is inside the home box when dropped
-            if ((eventX <= home.rightX() && eventX >= home.leftX()) && (eventY <= home.bottomY() && eventY >= home.topY())) {
+            if (atHome()) {
                 state = State.HOME;
                 Log.d(TAG, "Kitten scored");
             }

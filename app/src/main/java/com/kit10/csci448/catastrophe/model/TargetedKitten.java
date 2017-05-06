@@ -26,17 +26,6 @@ public class TargetedKitten extends Kitten {
         this.targetY = targetY;
     }
 
-    /* @Override
-    public void move() {
-        oldX = x;
-        oldY = y;
-        double hyp = Math.sqrt(Math.pow((targetX - x), 2.0) + Math.pow((targetY - y), 2.0)); // determine length of hypotenuse
-        stepSize += stepSizeGrowth;
-        double ratio = stepSize / hyp;
-        x += (int) (ratio * (targetX - x));
-        y += (int) (ratio * (targetY - y));
-    }*/
-
     protected void setVelocities() {
         super.setVelocities();
         if (state == State.FLEEING) {
