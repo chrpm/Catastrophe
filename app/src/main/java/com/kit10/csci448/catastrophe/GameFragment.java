@@ -35,6 +35,8 @@ import java.util.TimerTask;
  */
 
 public class GameFragment extends Fragment {
+    public static final String TAG = "GameFragment";
+
     private SoundBox mSoundBox;
     private Sound mStartSound;
     private List<Sound> mSounds;
@@ -62,7 +64,7 @@ public class GameFragment extends Fragment {
     private Home mHome;
 
     public static GameFragment newInstance() {
-        Log.d(WelcomeActivity.LOG_TAG, "GameFragment : new instance");
+        Log.d(TAG, "GameFragment : new instance");
         Bundle args = new Bundle();
 
         GameFragment fragment = new GameFragment();
@@ -82,7 +84,7 @@ public class GameFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Log.d(WelcomeActivity.LOG_TAG, "GameFragment : onCreateView");
+        Log.d(TAG, "GameFragment : onCreateView");
         super.onCreate(savedInstanceState);
         View v = inflater.inflate(R.layout.activity_game, container, false);
 
@@ -139,7 +141,7 @@ public class GameFragment extends Fragment {
         mOptionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(WelcomeActivity.LOG_TAG, "WelcomeFragment : starting options");
+                Log.d(TAG, "WelcomeFragment : starting options");
                 startActivityForResult(OptionsActivity.newIntent(getActivity()), WelcomeActivity.REQUEST_CODE_OPTIONS);
             }
         });
@@ -264,7 +266,10 @@ public class GameFragment extends Fragment {
             k.performMovement();
 
             if (k.getState() == Kitten.State.HOME) {
-                // TODO: update the UI
+                for (Kitten.ScoreStyle ss : k.getScoreStyles()) {
+                    Log.d(TAG, "Score style: " + ss);
+                }
+                k.clearScoreStyles();
             }
         }
 

@@ -7,6 +7,9 @@ import android.util.Log;
 
 import com.kit10.csci448.catastrophe.WelcomeActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Adrien on 3/1/2017.
  */
@@ -35,9 +38,15 @@ public class Kitten {
 
     public enum State {
       FLEEING, HELD, ESCAPED, HOME, LAUNCHED
-    };
-
+    }
     protected State state = State.HOME;
+    private int numBounces = 0;
+    private boolean backboardBounce = false;
+
+    public enum ScoreStyle {
+        DROP, LAUNCH, BACKBOARD, BOUNCE, DOUBLE_BOUNCE, MULTI_BOUNCE, LAUNCH_N_CATCH
+    }
+    private List<ScoreStyle> scoreStyles;
 
     /**
      * @param sweetCatPic : bitmat defining the kitten's texture
@@ -53,6 +62,7 @@ public class Kitten {
         this.stepSize = stepSize;
         this.stepSizeGrowth = stepSizeGrowth;
         this.sweetCatPic = sweetCatPic;
+        this.scoreStyles = new ArrayList<>();
         setVelocities();
     }
 
@@ -63,49 +73,17 @@ public class Kitten {
         canvas.drawBitmap(sweetCatPic, x - (sweetCatPic.getWidth() / 2), y - (sweetCatPic.getHeight() / 2), null);
     }
 
-    public boolean selected(float eventX, float eventY) {
-        if (eventX >= (x - sweetCatPic.getWidth() / 2) && (eventX <= (x + sweetCatPic.getWidth()/2))) {
-            if (eventY >= (y - sweetCatPic.getHeight() / 2) && (y <= (y + sweetCatPic.getHeight() / 2))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean atHome() {
-        return (x <= home.rightX() && x >= home.leftX()) && (y <= home.bottomY() && y >= home.topY());
-    }
-
     public void performMovement() {
         switch (state) {
             case FLEEING:
+                if (scoreStyles.size() > 0) {
+                    clearScoreStyles();
+                }
                 flee();
                 break;
             case LAUNCHED:
                 launched();
                 break;
-        }
-    }
-
-    public void flee() {
-        move();
-    }
-
-    public void launched() {
-        move();
-
-        velocityX -= FLING_DECELLERATION * ((velocityX > 0) ? 1 : -1);
-        velocityY -= FLING_DECELLERATION * ((velocityY > 0) ? 1 : -1);
-
-        Log.d(TAG, String.format("velocityX: %f, velocityY: %f", velocityX, velocityY));
-        if (Math.abs(velocityX) <= FLING_DECELLERATION && Math.abs(velocityY) <= FLING_DECELLERATION) {
-            if (atHome()) {
-                state = State.HOME;
-                Log.d(TAG, "Kitten scored");
-            }
-            else {
-                state = State.FLEEING;
-            }
         }
     }
 
@@ -126,19 +104,82 @@ public class Kitten {
     }
 
     protected void setVelocities() {
+        boolean bounce = false;
         if (x <= 0) {
             velocityX = Math.abs(velocityX);
+            bounce = true;
         }
         else if (x >= getScreenWidth()) {
             velocityX = -1 * Math.abs(velocityX);
+            bounce = true;
         }
+
         if (y >= getScreenHeight()) {
             velocityY = -1 * Math.abs(velocityY);
+            bounce = true;
+            backboardBounce = true;
         }
+
+        if (bounce) {
+            numBounces++;
+        }
+    }
+
+    public void flee() {
+        move();
+    }
+
+    public void launched() {
+        move();
+
+        velocityX -= FLING_DECELLERATION * ((velocityX > 0) ? 1 : -1);
+        velocityY -= FLING_DECELLERATION * ((velocityY > 0) ? 1 : -1);
+
+        Log.d(TAG, String.format("velocityX: %f, velocityY: %f", velocityX, velocityY));
+        if (Math.abs(velocityX) <= FLING_DECELLERATION && Math.abs(velocityY) <= FLING_DECELLERATION) {
+            if (atHome()) {
+                state = State.HOME;
+                Log.d(TAG, "Kitten scored");
+
+                scoreStyles.add(ScoreStyle.LAUNCH);
+                if (numBounces == 1) {
+                    scoreStyles.add(ScoreStyle.BOUNCE);
+                }
+                else if (numBounces == 2) {
+                    scoreStyles.add(ScoreStyle.DOUBLE_BOUNCE);
+                }
+                else if (numBounces > 2) {
+                    scoreStyles.add(ScoreStyle.MULTI_BOUNCE);
+                }
+                if (backboardBounce) {
+                    scoreStyles.add(ScoreStyle.BACKBOARD);
+                }
+            }
+            else {
+                state = State.FLEEING;
+            }
+        }
+    }
+
+    public boolean selected(float eventX, float eventY) {
+        if (eventX >= (x - sweetCatPic.getWidth() / 2) && (eventX <= (x + sweetCatPic.getWidth() / 2))) {
+            if (eventY >= (y - sweetCatPic.getHeight() / 2) && (y <= (y + sweetCatPic.getHeight() / 2))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean atHome() {
+        return (x <= home.rightX() && x >= home.leftX()) && (y <= home.bottomY() && y >= home.topY());
     }
 
     public void handleActionDown(float eventX, float eventY) {
         if (selected(eventX, eventY)) {
+            clearScoreStyles();
+            if (state == State.LAUNCHED) {
+                scoreStyles.add(ScoreStyle.LAUNCH_N_CATCH);
+            }
             // Cat picture has been touched
             state = State.HELD;
         }
@@ -149,6 +190,7 @@ public class Kitten {
             // check if the kitten is inside the home box when dropped
             if (atHome()) {
                 state = State.HOME;
+                scoreStyles.add(ScoreStyle.DROP);
                 Log.d(TAG, "Kitten scored");
             }
             else {
@@ -164,6 +206,12 @@ public class Kitten {
             this.velocityX = velocityX / 500;
             this.velocityY = velocityY / 500;
         }
+    }
+
+    public void clearScoreStyles() {
+        scoreStyles.clear();
+        numBounces = 0;
+        backboardBounce = false;
     }
 
     public void setSweetCatPic(Bitmap sweetCatPic) {
@@ -220,5 +268,9 @@ public class Kitten {
 
     public int getCatHeight() {
         return sweetCatPic.getHeight();
+    }
+
+    public List<ScoreStyle> getScoreStyles() {
+        return scoreStyles;
     }
 }

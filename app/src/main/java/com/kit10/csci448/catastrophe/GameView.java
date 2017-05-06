@@ -120,6 +120,9 @@ public class GameView extends View {
             Log.d(GESTURE_TAG,"onDown: " + event.toString());
             for (Kitten k : mKitties) {
                 k.handleActionDown(event.getX(), event.getY());
+                if (k.getState() == Kitten.State.HELD) { // only hold one kitten at a time
+                    break;
+                }
             }
             return true;
         }
@@ -154,7 +157,9 @@ public class GameView extends View {
                     " Y VEL: " + Float.toString(velocityY));
             Log.d(GESTURE_TAG, "Nice downswipe");
             for (Kitten k : mKitties) {
-                k.handleActionFlung(e2.getX(), e2.getY(), velocityX, velocityY);
+                if (k.getState() == Kitten.State.HELD) {
+                    k.handleActionFlung(e2.getX(), e2.getY(), velocityX, velocityY);
+                }
             }
             return true;
         }
