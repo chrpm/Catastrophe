@@ -12,6 +12,7 @@ import android.view.View;
 
 import com.kit10.csci448.catastrophe.model.Home;
 import com.kit10.csci448.catastrophe.model.Kitten;
+import com.kit10.csci448.catastrophe.model.ScoreSplash;
 
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class GameView extends View {
     private Canvas mCanvas;
 
     private List<Kitten> mKitties;
+    private ScoreSplash mScoreSplash;
 
     private Home mHome;
 
@@ -53,6 +55,9 @@ public class GameView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        if (mScoreSplash.drawing()) {
+            mScoreSplash.draw(canvas);
+        }
         mHome.draw(canvas);
         for (Kitten k : mKitties) {
             k.draw(canvas);
@@ -81,27 +86,10 @@ public class GameView extends View {
         return true;
     }
 
-    public void setGamePieces(List<Kitten> kitties, Home home) {
-        setKitties(kitties);
-        setHome(home);
-    }
-
-    /*
-    @Override
-    public boolean onTouchEvent(MotionEvent event){
-        if (mDetector.onTouchEvent(event))
-            return true;
-        else
-            return super.onTouchEvent(event); // or false (it's what you whant).
-    }
-    */
-
-    public List<Kitten> getKitties() {
-        return mKitties;
-    }
-
-    public void setKitties(List<Kitten> kitties) {
-        this.mKitties = kitties;
+    public void setGameResources(List<Kitten> kitties, ScoreSplash scoreSplash, Home home) {
+        mKitties = kitties;
+        mHome = home;
+        mScoreSplash = scoreSplash;
     }
 
     public Home getHome() {

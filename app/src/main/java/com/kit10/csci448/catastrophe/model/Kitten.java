@@ -246,11 +246,11 @@ public class Kitten {
         return y;
     }
 
-    public static int getScreenWidth() {
+    private static int getScreenWidth() {
         return Resources.getSystem().getDisplayMetrics().widthPixels;
     }
 
-    public static int getScreenHeight() {
+    private static int getScreenHeight() {
         return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 

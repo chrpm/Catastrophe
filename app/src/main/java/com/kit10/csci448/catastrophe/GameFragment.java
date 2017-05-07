@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.kit10.csci448.catastrophe.model.Home;
 import com.kit10.csci448.catastrophe.model.Kitten;
+import com.kit10.csci448.catastrophe.model.ScoreSplash;
 import com.kit10.csci448.catastrophe.model.Sound;
 import com.kit10.csci448.catastrophe.model.SoundBox;
 import com.kit10.csci448.catastrophe.model.TargetedKitten;
@@ -62,6 +63,7 @@ public class GameFragment extends Fragment {
 
     private List<Kitten> mKitties;
     private Home mHome;
+    private ScoreSplash mScoreSplash;
 
     public static GameFragment newInstance() {
         Log.d(TAG, "GameFragment : new instance");
@@ -94,8 +96,12 @@ public class GameFragment extends Fragment {
 
         mGameView = (GameView) v.findViewById(R.id.canvas_view);
         mKitties = new ArrayList<>();
-        Bitmap homePic = BitmapFactory.decodeResource(getResources(), R.drawable.home); // get the home image
 
+        Bitmap splashPic = BitmapFactory.decodeResource(getResources(), R.drawable.kittensplash);
+        Bitmap starPic = BitmapFactory.decodeResource(getResources(), R.drawable.star);
+        mScoreSplash = new ScoreSplash(splashPic, starPic);
+
+        Bitmap homePic = BitmapFactory.decodeResource(getResources(), R.drawable.home); // get the home image
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int screenHeight = displayMetrics.heightPixels;
@@ -105,10 +111,9 @@ public class GameFragment extends Fragment {
 
         double homeHeight = screenHeight - (screenHeight * HOME_SIZE_PERCENTAGE);
         Log.d("Home Height", Integer.toString((int)homeHeight));
-
         mHome = new Home(homePic, new int[]{0,(int)homeHeight,screenWidth,screenHeight}); // home is represented as a rectangle: coordinate format is {left, right, top, bottom
 
-        mGameView.setGamePieces(mKitties, mHome);
+        mGameView.setGameResources(mKitties, mScoreSplash, mHome);
 
         mTime = (TextView)v.findViewById(R.id.time);
         mTime.setText("Time: 0:00");
@@ -268,6 +273,9 @@ public class GameFragment extends Fragment {
             if (k.getState() == Kitten.State.HOME) {
                 for (Kitten.ScoreStyle ss : k.getScoreStyles()) {
                     Log.d(TAG, "Score style: " + ss);
+                }
+                if (k.getScoreStyles().size() > 0) {
+                    mScoreSplash.startDrawing();
                 }
                 k.clearScoreStyles();
             }
