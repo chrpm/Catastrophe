@@ -44,7 +44,25 @@ public class Kitten {
     private boolean backboardBounce = false;
 
     public enum ScoreStyle {
-        DROP, LAUNCH, BACKBOARD, BOUNCE, DOUBLE_BOUNCE, MULTI_BOUNCE, LAUNCH_N_CATCH
+        DROP ("Drop", 5), LAUNCH ("Launch", 10), BACKBOARD ("Backboard", 5), BOUNCE("Bounce", 5), DOUBLE_BOUNCE("Double-bounce!", 10), MULTI_BOUNCE("Multi-Bounce!!", 15), LAUNCH_N_CATCH("Launch 'n' Catch", 5);
+
+        public static final int MAX_SCORE = LAUNCH.getPointValue() + BACKBOARD.getPointValue() + BOUNCE.getPointValue() + MULTI_BOUNCE.getPointValue() + LAUNCH_N_CATCH.getPointValue();
+
+        private final String name;
+        private final int pointValue;
+
+        private ScoreStyle(String s, int pointValue) {
+            name = s;
+            this.pointValue = pointValue;
+        }
+
+        public String toString() {
+            return this.name + " +" + getPointValue();
+        }
+
+        public int getPointValue() {
+            return pointValue;
+        }
     }
     private List<ScoreStyle> scoreStyles;
 
@@ -163,7 +181,7 @@ public class Kitten {
 
     public boolean selected(float eventX, float eventY) {
         if (eventX >= (x - sweetCatPic.getWidth() / 2) && (eventX <= (x + sweetCatPic.getWidth() / 2))) {
-            if (eventY >= (y - sweetCatPic.getHeight() / 2) && (y <= (y + sweetCatPic.getHeight() / 2))) {
+            if (eventY >= (y - sweetCatPic.getHeight() / 2) && (eventY <= (y + sweetCatPic.getHeight() / 2))) {
                 return true;
             }
         }

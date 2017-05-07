@@ -1,5 +1,6 @@
 package com.kit10.csci448.catastrophe;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -49,19 +50,17 @@ public class GameFragment extends Fragment {
     private ImageButton mOptionsButton;
     private Button mStartButton;
     private LinearLayout mPowerupToolbar;
-    private int kittensRemaining = 0;
 
     private Timer mTimer;
-    private TimerTask mTask;
-    public Handler mHandler;
-    private long startTime;
-    private long totalPlayTime = 0;
+    public static Handler mHandler;
     private TextView mTime;
-    private TextView mScore;
 
-    int i = 0;
-
+    // game specific items
     private List<Kitten> mKitties;
+    private long totalPlayTime = 0;
+    private TextView mScore;
+    private int mScoreValue;
+
     private Home mHome;
     private ScoreSplash mScoreSplash;
 
@@ -79,7 +78,23 @@ public class GameFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         mSoundBox = new SoundBox(getActivity());
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer.purge();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mTimer != null) {
+            resumeGame();
+        }
     }
 
     @Override
@@ -114,6 +129,7 @@ public class GameFragment extends Fragment {
         mHome = new Home(homePic, new int[]{0,(int)homeHeight,screenWidth,screenHeight}); // home is represented as a rectangle: coordinate format is {left, right, top, bottom
 
         mGameView.setGameResources(mKitties, mScoreSplash, mHome);
+        mGameView.setBackgroundResource(R.drawable.wooden_floor);
 
         mTime = (TextView)v.findViewById(R.id.time);
         mTime.setText("Time: 0:00");
@@ -129,18 +145,9 @@ public class GameFragment extends Fragment {
                 mStartButton.setVisibility(View.GONE); // makes the start button invisible
                 mSoundBox.play(mStartSound);
                 // TODO: we may want to disable everything before this button is pressed (excluding the options button)
-                startGame();
+                startNewGame();
             }
         });
-        mHandler = new Handler() {
-             //the game is run on a different thread, so it has to send information to the UI thread through this handler
-            public void handleMessage(Message msg) {
-                mTime.setText(getTime());
-                //mScore.setText(recountKitties());
-                //mScore.setText(Integer.toString(kittensRemaining));
-                mGameView.update();
-            }
-        };
 
         mOptionsButton = (ImageButton) v.findViewById(R.id.options_button);
         mOptionsButton.setOnClickListener(new View.OnClickListener() {
@@ -152,9 +159,30 @@ public class GameFragment extends Fragment {
         });
 
         mPowerupToolbar = (LinearLayout) v.findViewById(R.id.powerup_toolbar);
-        populatePowerupToolbar();
 
         return v;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mHandler = getHandler();
+    }
+
+    public Handler getHandler() {
+        if (mHandler == null) {
+            mHandler = new Handler() {
+                //the game is run on a different thread, so it has to send information to the UI thread through this handler
+                public void handleMessage(Message msg) {
+                    mTime.setText(getTime());
+                    mScore.setText(getString(R.string.score, mScoreValue));
+                    //mScore.setText(recountKitties());
+                    //mScore.setText(Integer.toString(kittensRemaining));
+                    mGameView.update();
+                }
+            };
+        }
+        return mHandler;
     }
 
     /**
@@ -181,9 +209,24 @@ public class GameFragment extends Fragment {
     /**
      * Starts the game on a new thread that is updated at a fixed rate
      */
-    private void startGame() {
-        mTimer = new Timer();
+    private void startNewGame() {
+        populatePowerupToolbar();
+
+        totalPlayTime = 0;
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer.purge();
+        }
+
+        mScoreValue = 0;
+        mKitties.clear();
         addNewKitties();
+
+        resumeGame();
+    }
+
+    private void resumeGame() {
+        mTimer = new Timer();
         int updateRate = 10; // update the game every 10 ms
         mTimer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
@@ -227,14 +270,12 @@ public class GameFragment extends Fragment {
                     700, -1000,
                     mHome,
                     Kitten.DEFAULT_STEP_SIZE, Kitten.DEFAULT_STEP_SIZE_GROWTH));
-            kittensRemaining++;
             mKitties.add(new ZigKitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
                     700, -1000,
                     mHome,
                     Kitten.DEFAULT_STEP_SIZE, Kitten.DEFAULT_STEP_SIZE_GROWTH,
                     ZigKitten.DEFAULT_VARIABILITY, ZigKitten.DEFAULT_PROBABILiTY));
-            kittensRemaining++;
         }
     }
 
@@ -271,11 +312,16 @@ public class GameFragment extends Fragment {
             k.performMovement();
 
             if (k.getState() == Kitten.State.HOME) {
-                for (Kitten.ScoreStyle ss : k.getScoreStyles()) {
-                    Log.d(TAG, "Score style: " + ss);
-                }
                 if (k.getScoreStyles().size() > 0) {
-                    mScoreSplash.startDrawing();
+                    List<String> textLines = new ArrayList<>();
+                    int plusScore = 0 ;
+                    for (Kitten.ScoreStyle ss : k.getScoreStyles()) {
+                        Log.d(TAG, "Score style: " + ss);
+                        textLines.add(ss.toString());
+                        plusScore += ss.getPointValue();
+                    }
+                    mScoreValue += plusScore;
+                    mScoreSplash.startDrawing(textLines, plusScore);
                 }
                 k.clearScoreStyles();
             }
