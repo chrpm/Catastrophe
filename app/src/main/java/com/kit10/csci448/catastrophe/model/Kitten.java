@@ -118,6 +118,7 @@ public class Kitten {
         y += velocityY;
         if (y <= -1 * getCatHeight()) {
             state = State.ESCAPED;
+            Log.d(TAG, "kitten escaped");
         }
     }
 
@@ -193,6 +194,9 @@ public class Kitten {
     }
 
     public void handleActionDown(float eventX, float eventY) {
+        if (state == State.HOME) {
+            return;
+        }
         if (selected(eventX, eventY)) {
             clearScoreStyles();
             if (state == State.LAUNCHED) {

@@ -166,24 +166,22 @@ public class GameFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mHandler = getHandler();
+        getHandler();
     }
 
-    public Handler getHandler() {
-        if (mHandler == null) {
-            mHandler = new Handler() {
-                //the game is run on a different thread, so it has to send information to the UI thread through this handler
-                public void handleMessage(Message msg) {
-                    mTime.setText(getTime());
-                    mScore.setText(getString(R.string.score, mScoreValue));
-                    //mScore.setText(recountKitties());
-                    //mScore.setText(Integer.toString(kittensRemaining));
-                    mGameView.update();
-                }
-            };
-        }
-        return mHandler;
+    public void getHandler() {
+        mHandler = new Handler() {
+            //the game is run on a different thread, so it has to send information to the UI thread through this handler
+            public void handleMessage(Message msg) {
+                mTime.setText(getTime());
+                mScore.setText(getActivity().getString(R.string.score, mScoreValue));
+                //mScore.setText(recountKitties());
+                //mScore.setText(Integer.toString(kittensRemaining));
+                mGameView.update();
+            }
+        };
     }
+
 
     /**
      * Spawns powerups in the powerup toolbar and defines their functionality
