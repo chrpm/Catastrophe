@@ -119,7 +119,7 @@ public class OptionsFragment extends Fragment {
                 Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : quitting");
                 //android.os.Process.killProcess(android.os.Process.myPid());
                 //System.exit(1);
-                startActivityForResult(WelcomeActivity.newIntent(getActivity()), WelcomeActivity.REQUEST_CODE_GAME);
+                startActivityForResult(WelcomeActivity.newIntent(getActivity(), soundOn, musicOn), WelcomeActivity.REQUEST_CODE_GAME);
             }
         });
 
