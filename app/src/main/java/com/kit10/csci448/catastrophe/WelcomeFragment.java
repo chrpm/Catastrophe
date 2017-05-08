@@ -43,7 +43,7 @@ public class WelcomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(WelcomeActivity.LOG_TAG, "WelcomeFragment : starting game");
-                startActivityForResult(GameActivity.newIntent(getActivity()), WelcomeActivity.REQUEST_CODE_GAME);
+                startActivityForResult(GameActivity.newIntent(getActivity(), true, true), WelcomeActivity.REQUEST_CODE_GAME);
             }
         });
 

@@ -10,6 +10,8 @@ import android.util.Log;
  */
 
 public class OptionsActivity extends SingleFragmentActivity {
+
+
     public static Intent newIntent(Context packageContext) {
         Log.d(WelcomeActivity.LOG_TAG, "OptionsActivity: new intent");
         Intent intent = new Intent(packageContext, OptionsActivity.class);
@@ -18,6 +20,7 @@ public class OptionsActivity extends SingleFragmentActivity {
 
     @Override
     protected Fragment createFragment() {
+
         return OptionsFragment.createFragment();
     }
 }

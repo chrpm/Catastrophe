@@ -34,6 +34,11 @@ public class OptionsFragment extends Fragment {
     private LinearLayout mMusicOnLayout;
     private LinearLayout mMusicOffLayout;
 
+    public boolean soundOn;
+    public boolean musicOn;
+
+
+
     public static OptionsFragment createFragment() {
         Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : new instance");
 
@@ -59,7 +64,7 @@ public class OptionsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : resuming game");
-                startActivityForResult(GameActivity.newIntent(getActivity()), WelcomeActivity.REQUEST_CODE_GAME);
+                startActivityForResult(GameActivity.newIntent(getActivity(), musicOn, soundOn), WelcomeActivity.REQUEST_CODE_GAME);
             }
         });
 
@@ -68,8 +73,9 @@ public class OptionsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : turning sound on");
-                mSoundOffLayout.setVisibility(View.GONE);
-                mSoundOnLayout.setVisibility(View.VISIBLE);
+                mSoundOffLayout.setVisibility(View.VISIBLE);
+                mSoundOnLayout.setVisibility(View.GONE);
+                soundOn = false;
             }
         });
 
@@ -78,8 +84,9 @@ public class OptionsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : turning sound off");
-                mSoundOnLayout.setVisibility(View.GONE);
-                mSoundOffLayout.setVisibility(View.VISIBLE);
+                mSoundOffLayout.setVisibility(View.GONE);
+                mSoundOnLayout.setVisibility(View.VISIBLE);
+                soundOn = true;
             }
         });
 
@@ -88,8 +95,9 @@ public class OptionsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : turning music on");
-                mMusicOffLayout.setVisibility(View.GONE);
-                mMusicOnLayout.setVisibility(View.VISIBLE);
+                mMusicOnLayout.setVisibility(View.GONE);
+                mMusicOffLayout.setVisibility(View.VISIBLE);
+                musicOn = false;
             }
         });
 
@@ -98,8 +106,9 @@ public class OptionsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : turning music off");
-                mMusicOnLayout.setVisibility(View.GONE);
-                mMusicOffLayout.setVisibility(View.VISIBLE);
+                mMusicOffLayout.setVisibility(View.GONE);
+                mMusicOnLayout.setVisibility(View.VISIBLE);
+                musicOn = true;
             }
         });
 

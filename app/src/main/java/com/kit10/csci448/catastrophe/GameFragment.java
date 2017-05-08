@@ -39,6 +39,8 @@ import java.util.TimerTask;
 
 public class GameFragment extends Fragment {
     public static final String TAG = "GameFragment";
+    private static final String ARG_SOUND = "sound_on_id";
+    private static final String ARG_MUSIC = "music_on_id";
 
     public int scoreMultiplier = 1;
 
@@ -48,6 +50,8 @@ public class GameFragment extends Fragment {
     private List<Sound> mHappyShortSounds;
     private List<Sound> mPurrSounds;
     public final double HOME_SIZE_PERCENTAGE = 0.3;
+    public boolean soundOn;
+    public boolean musicOn;
 
     private GameView mGameView;
     private ImageButton mOptionsButton;
@@ -71,10 +75,11 @@ public class GameFragment extends Fragment {
     private Home mHome;
     private ScoreSplash mScoreSplash;
 
-    public static GameFragment newInstance() {
+    public static GameFragment newInstance(boolean sound, boolean music) {
         Log.d(TAG, "GameFragment : new instance");
         Bundle args = new Bundle();
-
+        args.putBoolean(ARG_SOUND, sound);
+        args.putBoolean(ARG_MUSIC, music);
         GameFragment fragment = new GameFragment();
         fragment.setArguments(args);
         return fragment;
@@ -85,6 +90,8 @@ public class GameFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         mSoundBox = new SoundBox(getActivity());
+        soundOn = getArguments().getBoolean(ARG_SOUND);
+        musicOn = getArguments().getBoolean(ARG_MUSIC);
     }
 
     @Override
@@ -111,6 +118,8 @@ public class GameFragment extends Fragment {
         Log.d(TAG, "GameFragment : onCreateView");
         super.onCreate(savedInstanceState);
         View v = inflater.inflate(R.layout.activity_game, container, false);
+
+
 
         mStartSound = mSoundBox.getStartSound();
         mPurrSounds = mSoundBox.getPurrSounds();
@@ -150,7 +159,10 @@ public class GameFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mStartButton.setVisibility(View.GONE); // makes the start button invisible
-                mSoundBox.play(mStartSound);
+                if(soundOn) {
+                    mSoundBox.play(mStartSound);
+                }
+
                 // TODO: we may want to disable everything before this button is pressed (excluding the options button)
                 startNewGame();
             }
@@ -173,7 +185,10 @@ public class GameFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mGameOverUI.setVisibility(View.GONE);
-                mSoundBox.play(mStartSound);
+                if(soundOn) {
+                    mSoundBox.play(mStartSound);
+                }
+
                 // TODO: Start that new game
                 startNewGame();
             }
@@ -195,9 +210,7 @@ public class GameFragment extends Fragment {
                 Log.d("Your Message: ", Integer.toString(msg.what));
                 if(msg.what == 1){
                     mTime.setText(getTime());
-                    mScore.setText(getActivity().getString(R.string.score, mScoreValue));
-                    //mScore.setText(recountKitties());
-                    //mScore.setText(Integer.toString(kittensRemaining));
+                    mScore.setText(getActivity().getString(R.string.score, mScoreValue));;
                 } else if (msg.what == 2){
                     mGameOverUI.setVisibility(View.VISIBLE);
                 }
@@ -331,18 +344,8 @@ public class GameFragment extends Fragment {
             //Find if the kitten is on the game screen.
             if((catY + (catHeight / 2) > 0) && (catY - (catHeight / 2) < screenHeight)) {
                 if((catX + (catWidth / 2) > 0) && (catX - (catWidth / 2) < screenWidth)) {
-                    // k.setOnScreen(true);
-                    //string = "On Screen";
                     kittensOnScreen++;
                 }
-                else {
-                    // k.setOnScreen(false);
-                    //string = "Not On Screen";
-                }
-            }
-            else {
-                // k.setOnScreen(false);
-                //string = "Not On Screen";
             }
 
             k.performMovement();
@@ -427,51 +430,7 @@ public class GameFragment extends Fragment {
         mSoundBox.release();
     }
 
-    /*private class SoundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private Button mButton;
-        private Sound mSound;
 
-        public SoundHolder(LayoutInflater inflater, ViewGroup container) {
-            super(inflater.inflate(R.layout.list_item_sound, container, false));
-            mButton = (Button)itemView.findViewById(R.id.button);
-            mButton.setOnClickListener(this);
-        }
-
-        public void bindSound(Sound sound) {
-            mSound = sound;
-            mButton.setText(mSound.getName());
-        }
-
-        @Override
-        public void onClick(View v) {
-            mBeatBox.play(mSound);
-        }
-    }
-
-    private class SoundAdapter extends RecyclerView.Adapter<SoundHolder> {
-        private List<Sound> mSounds;
-
-        public SoundAdapter(List<Sound> sounds) {
-            mSounds = sounds;
-        }
-
-        @Override
-        public SoundHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            LayoutInflater inflater = LayoutInflater.from(getActivity());
-            return new SoundHolder(inflater, parent);
-        }
-
-        @Override
-        public void onBindViewHolder(SoundHolder soundHolder, int position) {
-            Sound sound = mSounds.get(position);
-            soundHolder.bindSound(sound);
-        }
-
-        @Override
-        public int getItemCount() {
-            return mSounds.size();
-        }
-    }*/
 
 
 
