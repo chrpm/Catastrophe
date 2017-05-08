@@ -50,10 +50,14 @@ public class GameFragment extends Fragment {
     private ImageButton mOptionsButton;
     private Button mStartButton;
     private LinearLayout mPowerupToolbar;
+    private LinearLayout mGameOverUI;
+    private Button mRestartButton;
 
     private Timer mTimer;
     public static Handler mHandler;
     private TextView mTime;
+
+    private boolean gameIsRunning = false;
 
     // game specific items
     private List<Kitten> mKitties;
@@ -159,6 +163,18 @@ public class GameFragment extends Fragment {
         });
 
         mPowerupToolbar = (LinearLayout) v.findViewById(R.id.powerup_toolbar);
+        mGameOverUI = (LinearLayout) v.findViewById(R.id.restart_ui);
+
+        mRestartButton = (Button) v.findViewById(R.id.restart_button);
+        mRestartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mGameOverUI.setVisibility(View.GONE);
+                mSoundBox.play(mStartSound);
+                // TODO: Start that new game
+                startNewGame();
+            }
+        });
 
         return v;
     }
@@ -173,10 +189,15 @@ public class GameFragment extends Fragment {
         mHandler = new Handler() {
             //the game is run on a different thread, so it has to send information to the UI thread through this handler
             public void handleMessage(Message msg) {
-                mTime.setText(getTime());
-                mScore.setText(getActivity().getString(R.string.score, mScoreValue));
-                //mScore.setText(recountKitties());
-                //mScore.setText(Integer.toString(kittensRemaining));
+                Log.d("Your Message: ", Integer.toString(msg.what));
+                if(msg.what == 1){
+                    mTime.setText(getTime());
+                    mScore.setText(getActivity().getString(R.string.score, mScoreValue));
+                    //mScore.setText(recountKitties());
+                    //mScore.setText(Integer.toString(kittensRemaining));
+                } else if (msg.what == 2){
+                    mGameOverUI.setVisibility(View.VISIBLE);
+                }
                 mGameView.update();
             }
         };
@@ -188,6 +209,7 @@ public class GameFragment extends Fragment {
      */
     public void populatePowerupToolbar() {
         // temporary code for demo purposes only
+        mPowerupToolbar.removeAllViews();
         // TODO: implement powerups
         for(int i = 0; i < 3; i++) {
             final ImageButton powerupButton = new ImageButton(getActivity());
@@ -208,6 +230,7 @@ public class GameFragment extends Fragment {
      * Starts the game on a new thread that is updated at a fixed rate
      */
     private void startNewGame() {
+        gameIsRunning = true;
         populatePowerupToolbar();
 
         totalPlayTime = 0;
@@ -283,6 +306,7 @@ public class GameFragment extends Fragment {
      */
     private void gameLoop() {
         randomFleeing();
+        int kittensOnScreen = 0;
         for (Kitten k : mKitties) {
             int catHeight = k.getCatHeight();
             int catWidth = k.getCatWidth();
@@ -296,6 +320,7 @@ public class GameFragment extends Fragment {
                 if((catX + (catWidth / 2) > 0) && (catX - (catWidth / 2) < screenWidth)) {
                     // k.setOnScreen(true);
                     //string = "On Screen";
+                    kittensOnScreen++;
                 }
                 else {
                     // k.setOnScreen(false);
@@ -326,8 +351,23 @@ public class GameFragment extends Fragment {
         }
 
         // updates the UI
-        mHandler.obtainMessage(1).sendToTarget();
+        if (gameIsRunning){
+            if(kittensOnScreen == 0){
+                endGame();
+            } else {
+                mHandler.obtainMessage(1).sendToTarget();
+            }
+        }
     }
+
+    private void endGame(){
+        gameIsRunning = false;
+        mHandler.obtainMessage(2).sendToTarget();
+
+        //resumeGame();
+        //startNewGame();
+    }
+
 
     /**
      * randomly causes kittens to flee
