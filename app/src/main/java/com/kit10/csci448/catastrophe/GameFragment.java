@@ -50,6 +50,8 @@ public class GameFragment extends Fragment {
     private ImageButton mOptionsButton;
     private Button mStartButton;
     private LinearLayout mPowerupToolbar;
+    private LinearLayout mGameOverUI;
+    private Button mRestartButton;
 
     private Timer mTimer;
     public static Handler mHandler;
@@ -159,6 +161,18 @@ public class GameFragment extends Fragment {
         });
 
         mPowerupToolbar = (LinearLayout) v.findViewById(R.id.powerup_toolbar);
+        mGameOverUI = (LinearLayout) v.findViewById(R.id.restart_ui);
+
+        mRestartButton = (Button) v.findViewById(R.id.restart_button);
+        mRestartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mGameOverUI.setVisibility(View.GONE);
+                mSoundBox.play(mStartSound);
+                // TODO: Start that new game
+                //startNewGame();
+            }
+        });
 
         return v;
     }
@@ -283,6 +297,7 @@ public class GameFragment extends Fragment {
      */
     private void gameLoop() {
         randomFleeing();
+        int kittensOnScreen = 0;
         for (Kitten k : mKitties) {
             int catHeight = k.getCatHeight();
             int catWidth = k.getCatWidth();
@@ -296,6 +311,7 @@ public class GameFragment extends Fragment {
                 if((catX + (catWidth / 2) > 0) && (catX - (catWidth / 2) < screenWidth)) {
                     // k.setOnScreen(true);
                     //string = "On Screen";
+                    kittensOnScreen++;
                 }
                 else {
                     // k.setOnScreen(false);
@@ -325,9 +341,19 @@ public class GameFragment extends Fragment {
             }
         }
 
+        if(kittensOnScreen == 0){
+            endGame();
+        }
         // updates the UI
         mHandler.obtainMessage(1).sendToTarget();
     }
+
+    private void endGame(){
+        //mGameOverUI.setVisibility(View.VISIBLE);
+        //resumeGame();
+        //startNewGame();
+    }
+
 
     /**
      * randomly causes kittens to flee

@@ -18,6 +18,32 @@
         android:layout_gravity="top|left"
         android:padding="10dp"
         android:background="@drawable/options_gear"/>
+    x
+    <LinearLayout
+        android:id="@+id/restart_ui"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textSize="40dp"
+            android:textColor="#ffffff"
+            android:text="GAME OVER "/>
+        <Button
+            android:id="@+id/restart_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textSize="40dp"
+            android:text="Restart"/>
+    </LinearLayout>
     <Button
         android:id="@+id/start_button"
         android:layout_width="wrap_content"
@@ -34,6 +60,7 @@
         android:padding="10dp"
         android:textSize="20dp"
         android:layout_gravity="top|right"
+        android:textColor="#ffffff"
         tools:text="Time"/>
     <LinearLayout
         android:id="@+id/powerup_toolbar"
@@ -51,6 +78,7 @@
         android:padding="10dp"
         android:textSize="20dp"
         android:layout_gravity="top|center"
+        android:textColor="#ffffff"
         tools:text="Kittens Remaining"
          />
 </FrameLayout>
