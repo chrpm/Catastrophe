@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
@@ -38,6 +39,8 @@ import java.util.TimerTask;
 
 public class GameFragment extends Fragment {
     public static final String TAG = "GameFragment";
+
+    public int scoreMultiplier = 1;
 
     private SoundBox mSoundBox;
     private Sound mStartSound;
@@ -217,8 +220,17 @@ public class GameFragment extends Fragment {
             powerupButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO: make kittens run back towards home
-                    Toast.makeText(getActivity(), "Powerup Selected!", Toast.LENGTH_SHORT).show();
+                    scoreMultiplier = 10;
+                    new CountDownTimer(5000, 1000) {
+
+                        public void onTick(long millisUntilFinished) {
+
+                        }
+
+                        public void onFinish() {
+                            scoreMultiplier = 1;
+                        }
+                    }.start();
                     mPowerupToolbar.removeView(powerupButton);
                 }
             });
@@ -306,6 +318,7 @@ public class GameFragment extends Fragment {
      */
     private void gameLoop() {
         randomFleeing();
+
         int kittensOnScreen = 0;
         for (Kitten k : mKitties) {
             int catHeight = k.getCatHeight();
@@ -343,6 +356,7 @@ public class GameFragment extends Fragment {
                         textLines.add(ss.toString());
                         plusScore += ss.getPointValue();
                     }
+                    plusScore = plusScore * scoreMultiplier;
                     mScoreValue += plusScore;
                     mScoreSplash.startDrawing(textLines, plusScore);
                 }
