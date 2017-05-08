@@ -172,7 +172,7 @@ public class GameFragment extends Fragment {
                 mGameOverUI.setVisibility(View.GONE);
                 mSoundBox.play(mStartSound);
                 // TODO: Start that new game
-                //startNewGame();
+                startNewGame();
             }
         });
 
@@ -209,6 +209,7 @@ public class GameFragment extends Fragment {
      */
     public void populatePowerupToolbar() {
         // temporary code for demo purposes only
+        mPowerupToolbar.removeAllViews();
         // TODO: implement powerups
         for(int i = 0; i < 3; i++) {
             final ImageButton powerupButton = new ImageButton(getActivity());
