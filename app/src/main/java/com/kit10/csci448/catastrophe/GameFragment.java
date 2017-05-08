@@ -349,12 +349,14 @@ public class GameFragment extends Fragment {
             }
         }
 
-        if(kittensOnScreen == 0 && gameIsRunning){
-            endGame();
-        } else {
-            mHandler.obtainMessage(1).sendToTarget();
-        }
         // updates the UI
+        if (gameIsRunning){
+            if(kittensOnScreen == 0){
+                endGame();
+            } else {
+                mHandler.obtainMessage(1).sendToTarget();
+            }
+        }
     }
 
     private void endGame(){
