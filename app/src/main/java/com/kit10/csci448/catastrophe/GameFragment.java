@@ -3,6 +3,9 @@ package com.kit10.csci448.catastrophe;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -52,6 +55,7 @@ public class GameFragment extends Fragment {
     public final double HOME_SIZE_PERCENTAGE = 0.3;
     public boolean soundOn;
     public boolean musicOn;
+    private Sound mBackgroundMusic;
 
     private GameView mGameView;
     private ImageButton mOptionsButton;
@@ -124,6 +128,7 @@ public class GameFragment extends Fragment {
         mStartSound = mSoundBox.getStartSound();
         mPurrSounds = mSoundBox.getPurrSounds();
         mHappyShortSounds = mSoundBox.getShortHappySounds();
+        mBackgroundMusic = mSoundBox.getBackgroundMusic();
 
         mGameView = (GameView) v.findViewById(R.id.canvas_view);
         mKitties = new ArrayList<>();
@@ -153,7 +158,6 @@ public class GameFragment extends Fragment {
         mScore = (TextView)v.findViewById(R.id.remaining);
         mScore.setText("Score: 0");
 
-
         mStartButton = (Button) v.findViewById(R.id.start_button);
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,6 +165,9 @@ public class GameFragment extends Fragment {
                 mStartButton.setVisibility(View.GONE); // makes the start button invisible
                 if(soundOn) {
                     mSoundBox.play(mStartSound);
+                }
+                if(musicOn) {
+                    mSoundBox.playLoop(mBackgroundMusic);
                 }
 
                 // TODO: we may want to disable everything before this button is pressed (excluding the options button)
@@ -173,6 +180,7 @@ public class GameFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "WelcomeFragment : starting options");
+                mSoundBox.stop();
                 startActivityForResult(OptionsActivity.newIntent(getActivity()), WelcomeActivity.REQUEST_CODE_OPTIONS);
             }
         });
@@ -187,6 +195,9 @@ public class GameFragment extends Fragment {
                 mGameOverUI.setVisibility(View.GONE);
                 if(soundOn) {
                     mSoundBox.play(mStartSound);
+                }
+                if(musicOn) {
+                    mSoundBox.playLoop(mBackgroundMusic);
                 }
 
                 // TODO: Start that new game
@@ -378,6 +389,7 @@ public class GameFragment extends Fragment {
     }
 
     private void endGame(){
+        mSoundBox.stop();
         gameIsRunning = false;
         mHandler.obtainMessage(2).sendToTarget();
 

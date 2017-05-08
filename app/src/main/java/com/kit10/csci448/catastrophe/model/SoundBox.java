@@ -25,9 +25,11 @@ public class SoundBox {
     private List<Sound> mPurrSounds;
     private List<Sound> mShortHappySounds;
     private Sound startSound;
-    private static final int MAX_SOUNDS = 5;    //Maybe make is so every visible cat can have a sound.
+    private Sound backgroundMusic;
+    private static final int MAX_SOUNDS = 10;    //Maybe make is so every visible cat can have a sound.
     private SoundPool mSoundPool;
     private AssetManager mAssets;
+    int backgroundID;
 
     public SoundBox(Context context) {
         mAssets = context.getAssets();
@@ -40,12 +42,23 @@ public class SoundBox {
         if (soundId == null) {
             return;
         }
-        mSoundPool.play(soundId, 1.0f, 1.0f, 1, 0, 1.0f);
+        mSoundPool.play(soundId, 0.25f, 0.25f, 1, 0, 1.0f);
+    }
+
+    public void playLoop(Sound sound) {
+        Integer soundId = sound.getSoundId();
+        if (soundId == null) {
+            return;
+        }
+        backgroundID = mSoundPool.play(soundId, 0.05f, 0.05f, 1, -1, 1.0f);
+
     }
 
     public void release() {
         mSoundPool.release();
     }
+
+    public void stop() { mSoundPool.stop(backgroundID);}
 
 
     public List<Sound> getSounds() {
@@ -55,6 +68,8 @@ public class SoundBox {
     public Sound getStartSound() {
         return startSound;
     }
+
+    public Sound getBackgroundMusic() { return backgroundMusic;}
 
     public List<Sound> getPurrSounds() {
         return mPurrSounds;
@@ -119,6 +134,13 @@ public class SoundBox {
             load(startSound);
         } catch (IOException ioe) {
             Log.e(TAG, "Could not load sound startSound", ioe);
+        }
+
+        try {
+            backgroundMusic = new Sound("background_music.mp3");
+            load(backgroundMusic);
+        } catch (IOException ioe) {
+            Log.e(TAG, "Could not load sound backgroundMusic", ioe);
         }
 
 
