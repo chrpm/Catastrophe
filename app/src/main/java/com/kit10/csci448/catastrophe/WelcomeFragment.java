@@ -14,6 +14,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import com.kit10.csci448.catastrophe.model.SoundBox;
+
 /**
  * Created by Adrien on 3/1/2017.
  */
@@ -21,14 +23,27 @@ import android.widget.ImageButton;
 public class WelcomeFragment extends Fragment {
 
     private ImageButton mStartButton;
+    private static final String ARG_SOUND = "sound_on_id";
+    private static final String ARG_MUSIC = "music_on_id";
+    public boolean sound;
+    public boolean music;
 
-    public static WelcomeFragment newInstance() {
+    public static WelcomeFragment newInstance(boolean sound, boolean music) {
         Log.d(WelcomeActivity.LOG_TAG, "WelcomeFragment : new instance");
         Bundle args = new Bundle();
-
+        args.putBoolean(ARG_SOUND, sound);
+        args.putBoolean(ARG_MUSIC, music);
         WelcomeFragment fragment = new WelcomeFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        sound = getArguments().getBoolean(ARG_SOUND);
+        music = getArguments().getBoolean(ARG_MUSIC);
     }
 
     @Override
@@ -43,7 +58,7 @@ public class WelcomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(WelcomeActivity.LOG_TAG, "WelcomeFragment : starting game");
-                startActivityForResult(GameActivity.newIntent(getActivity()), WelcomeActivity.REQUEST_CODE_GAME);
+                startActivityForResult(GameActivity.newIntent(getActivity(), sound, music), WelcomeActivity.REQUEST_CODE_GAME);
             }
         });
 
