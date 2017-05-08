@@ -3,9 +3,6 @@ package com.kit10.csci448.catastrophe;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -20,7 +17,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.kit10.csci448.catastrophe.model.Home;
 import com.kit10.csci448.catastrophe.model.Kitten;
@@ -53,6 +49,7 @@ public class GameFragment extends Fragment {
     private List<Sound> mHappyShortSounds;
     private List<Sound> mPurrSounds;
     public final double HOME_SIZE_PERCENTAGE = 0.3;
+    public final int TIME_LIMIT_MINUTES = 5;
     public boolean soundOn;
     public boolean musicOn;
     private Sound mBackgroundMusic;
@@ -75,9 +72,12 @@ public class GameFragment extends Fragment {
     private long totalPlayTime = 0;
     private TextView mScore;
     private int mScoreValue;
+    private boolean mTimeLimitExceeded = false;
 
     private Home mHome;
     private ScoreSplash mScoreSplash;
+    private int mScreenWidth;
+    private int mScreenHeight;
 
     public static GameFragment newInstance(boolean sound, boolean music) {
         Log.d(TAG, "GameFragment : new instance");
@@ -140,14 +140,14 @@ public class GameFragment extends Fragment {
         Bitmap homePic = BitmapFactory.decodeResource(getResources(), R.drawable.home); // get the home image
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int screenHeight = displayMetrics.heightPixels;
-        int screenWidth = displayMetrics.widthPixels;
-        Log.d("Height", Integer.toString(screenHeight));
-        Log.d("Width", Integer.toString(screenWidth));
+        mScreenHeight = displayMetrics.heightPixels;
+        mScreenWidth = displayMetrics.widthPixels;
+        Log.d("Height", Integer.toString(mScreenHeight));
+        Log.d("Width", Integer.toString(mScreenWidth));
 
-        double homeHeight = screenHeight - (screenHeight * HOME_SIZE_PERCENTAGE);
+        double homeHeight = mScreenHeight - (mScreenHeight * HOME_SIZE_PERCENTAGE);
         Log.d("Home Height", Integer.toString((int)homeHeight));
-        mHome = new Home(homePic, new int[]{0,(int)homeHeight,screenWidth,screenHeight}); // home is represented as a rectangle: coordinate format is {left, right, top, bottom
+        mHome = new Home(homePic, new int[]{0,(int)homeHeight,mScreenWidth,mScreenHeight}); // home is represented as a rectangle: coordinate format is {left, right, top, bottom
 
         mGameView.setGameResources(mKitties, mScoreSplash, mHome);
         mGameView.setBackgroundResource(R.drawable.wooden_floor);
@@ -275,6 +275,7 @@ public class GameFragment extends Fragment {
             mTimer.purge();
         }
 
+        mTimeLimitExceeded = false;
         mScoreValue = 0;
         mKitties.clear();
         addNewKitties();
@@ -296,6 +297,9 @@ public class GameFragment extends Fragment {
         int seconds = (int) (totalPlayTime / 1000);
         totalPlayTime = totalPlayTime + 10;
         int minutes = seconds / 60;
+        if (minutes >= TIME_LIMIT_MINUTES) {
+            mTimeLimitExceeded = true;
+        }
         seconds = seconds % 60;
         String sSeconds;
         String sMinutes;
@@ -310,8 +314,6 @@ public class GameFragment extends Fragment {
         }
         String time = "Time: " + sMinutes + ":" + sSeconds;
         return time;
-
-
     }
 
     /**
@@ -324,12 +326,12 @@ public class GameFragment extends Fragment {
             int n = rand.nextBoolean() ? -1 : 1; // sets n to either 1 or -1
             mKitties.add(new TargetedKitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
-                    700, -1000,
+                    mScreenWidth / 2, -1 * mScreenHeight / 10,
                     mHome,
                     Kitten.DEFAULT_STEP_SIZE, Kitten.DEFAULT_STEP_SIZE_GROWTH));
             mKitties.add(new ZigKitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
-                    700, -1000,
+                    mScreenWidth / 2, -1 * mScreenHeight / 10,
                     mHome,
                     Kitten.DEFAULT_STEP_SIZE, Kitten.DEFAULT_STEP_SIZE_GROWTH,
                     ZigKitten.DEFAULT_VARIABILITY, ZigKitten.DEFAULT_PROBABILiTY));
@@ -380,7 +382,7 @@ public class GameFragment extends Fragment {
 
         // updates the UI
         if (gameIsRunning){
-            if(kittensOnScreen == 0){
+            if(kittensOnScreen == 0 || mTimeLimitExceeded){
                 endGame();
             } else {
                 mHandler.obtainMessage(1).sendToTarget();

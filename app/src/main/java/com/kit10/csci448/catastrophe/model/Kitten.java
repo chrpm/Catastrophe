@@ -18,13 +18,11 @@ public class Kitten {
     public static final String TAG = "Kitten";
 
     public static final float DEFAULT_STEP_SIZE = 5.0f;
-    public static final float DEFAULT_STEP_SIZE_GROWTH = 0.001f;
+    public static final float DEFAULT_STEP_SIZE_GROWTH = 0.05f;
     public static final float FLING_DECELLERATION = 0.2f;
 
     protected float x;
     protected float y;
-    protected float oldX;
-    protected float oldY;
 
     protected double velocityX;
     protected double velocityY;
@@ -122,6 +120,10 @@ public class Kitten {
         }
     }
 
+    private void growStepSize() {
+        stepSize *= 1 + stepSizeGrowth;
+    }
+
     protected void setVelocities() {
         boolean bounce = false;
         if (x <= 0) {
@@ -198,6 +200,7 @@ public class Kitten {
             return;
         }
         if (selected(eventX, eventY)) {
+            growStepSize();
             clearScoreStyles();
             if (state == State.LAUNCHED) {
                 scoreStyles.add(ScoreStyle.LAUNCH_N_CATCH);

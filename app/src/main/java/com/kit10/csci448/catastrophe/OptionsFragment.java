@@ -64,7 +64,7 @@ public class OptionsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : resuming game");
-                startActivityForResult(GameActivity.newIntent(getActivity(), musicOn, soundOn), WelcomeActivity.REQUEST_CODE_GAME);
+                getActivity().finish();
             }
         });
 
