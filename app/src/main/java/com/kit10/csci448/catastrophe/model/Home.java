@@ -7,9 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Adrien on 3/31/2017.
+ * Used to model the basket which the kittens sleep in
  */
-
 public class Home {
     private enum CoordinateId {
         LEFT_X, TOP_Y, RIGHT_X, BOTTOM_Y
@@ -31,6 +30,9 @@ public class Home {
         coordinateMap.put(CoordinateId.BOTTOM_Y, coordinates[3]);
     }
 
+    /**
+     * Draws the home
+     */
     public void draw(Canvas canvas) {
         canvas.drawBitmap(sweetHomePic, leftX(), topY(), null);
     }

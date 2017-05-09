@@ -11,6 +11,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
+/**
+ * Activity that host the GameFragment
+ */
 public class GameActivity extends SingleFragmentActivity {
 
     public static final String MUSIC_ON_ID =
@@ -25,6 +28,9 @@ public class GameActivity extends SingleFragmentActivity {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Creates an explicit intent to start a GameActivity
+     */
     public static Intent newIntent(Context packageContext, boolean sound, boolean music) {
         Log.d(WelcomeActivity.LOG_TAG, "GameActivity: new intent");
         Intent intent = new Intent(packageContext, GameActivity.class);
@@ -33,6 +39,9 @@ public class GameActivity extends SingleFragmentActivity {
         return intent;
     }
 
+    /**
+     * Creates the GameFragment
+     */
     @Override
     protected Fragment createFragment() {
         boolean sound = (boolean) getIntent().getBooleanExtra(SOUND_ON_ID, true);

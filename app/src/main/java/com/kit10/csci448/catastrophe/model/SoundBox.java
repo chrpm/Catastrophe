@@ -12,9 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by ccollier on 5/3/2017.
+ * Contains sound resources
  */
-
 public class SoundBox {
 
     private static final String TAG = "SoundBox";

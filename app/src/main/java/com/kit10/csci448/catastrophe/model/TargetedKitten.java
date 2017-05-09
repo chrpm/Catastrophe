@@ -3,9 +3,8 @@ package com.kit10.csci448.catastrophe.model;
 import android.graphics.Bitmap;
 
 /**
- * Created by ccollier on 4/7/2017.
+ * Models a kitten that moves towards a specified point
  */
-
 public class TargetedKitten extends Kitten {
     protected int targetX;
     protected int targetY;
@@ -26,6 +25,10 @@ public class TargetedKitten extends Kitten {
         this.targetY = targetY;
     }
 
+    /**
+     * Overrides parent method to provide special movement
+     */
+    @Override
     protected void setVelocities() {
         super.setVelocities();
         if (state == State.FLEEING) {

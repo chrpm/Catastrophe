@@ -34,9 +34,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Created by Adrien on 3/1/2017.
+ * Controller for the game. Handles most of the backend of the game.
  */
-
 public class GameFragment extends Fragment {
     public static final String TAG = "GameFragment";
     private static final String ARG_SOUND = "sound_on_id";
@@ -89,6 +88,12 @@ public class GameFragment extends Fragment {
     private int mScreenWidth;
     private int mScreenHeight;
 
+    /**
+     * Creates a new instance of the GameFragment
+     * @param sound : whether the game should play sound
+     * @param music : whether the game should play music
+     * @return
+     */
     public static GameFragment newInstance(boolean sound, boolean music) {
         Log.d(TAG, "GameFragment : new instance");
         Bundle args = new Bundle();
@@ -102,7 +107,7 @@ public class GameFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        // setRetainInstance(false); PREVENT sound from playing once the fragment is destroyed
         mSoundBox = new SoundBox(getActivity());
         soundOn = getArguments().getBoolean(ARG_SOUND);
         musicOn = getArguments().getBoolean(ARG_MUSIC);
@@ -111,6 +116,7 @@ public class GameFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        // clear the timer
         if (mTimer != null) {
             mTimer.cancel();
             mTimer.purge();
@@ -133,8 +139,7 @@ public class GameFragment extends Fragment {
         super.onCreate(savedInstanceState);
         View v = inflater.inflate(R.layout.activity_game, container, false);
 
-
-
+        // initialize sounds
         mStartSound = mSoundBox.getStartSound();
         mPurrSounds = mSoundBox.getPurrSounds();
         mHappyShortSounds = mSoundBox.getShortHappySounds();
@@ -143,13 +148,16 @@ public class GameFragment extends Fragment {
         mUpsetSounds = mSoundBox.getUpsetSounds();
         mBounce = mSoundBox.getBounce();
 
+        // initialize the game view
         mGameView = (GameView) v.findViewById(R.id.canvas_view);
         mKitties = new ArrayList<>();
 
+        // initialize the score splash
         Bitmap splashPic = BitmapFactory.decodeResource(getResources(), R.drawable.kittensplash);
         Bitmap starPic = BitmapFactory.decodeResource(getResources(), R.drawable.star);
         mScoreSplash = new ScoreSplash(splashPic, starPic);
 
+        // initialize the home based off screen dimensions
         Bitmap homePic = BitmapFactory.decodeResource(getResources(), R.drawable.home); // get the home image
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -223,6 +231,9 @@ public class GameFragment extends Fragment {
         getHandler();
     }
 
+    /**
+     * Gets a handler to update the UI
+     */
     public void getHandler() {
         mHandler = new Handler() {
             //the game is run on a different thread, so it has to send information to the UI thread through this handler
@@ -272,7 +283,7 @@ public class GameFragment extends Fragment {
     }
 
     /**
-     * Starts the game on a new thread that is updated at a fixed rate
+     * Starts a new game on a new thread that is updated at a fixed rate
      */
     private void startNewGame() {
         gameIsRunning = true;
@@ -292,6 +303,9 @@ public class GameFragment extends Fragment {
         resumeGame();
     }
 
+    /**
+     * Resumes the game
+     */
     private void resumeGame() {
         mTimer = new Timer();
         int updateRate = 10; // update the game every 10 ms
@@ -302,6 +316,9 @@ public class GameFragment extends Fragment {
         }, 0, updateRate);
     }
 
+    /**
+     * @return a string representing the time
+     */
     private String getTime() {
         int seconds = (int) (totalPlayTime / 1000);
         totalPlayTime = totalPlayTime + 10;
@@ -363,6 +380,7 @@ public class GameFragment extends Fragment {
                 mSoundBox.stop(backgroundID);
             }
 
+            //performs sounds
             if(soundOn) {
                 if(k.getNoise() == Kitten.Noise.PURR) {
                     mSoundBox.play(mPurrSounds.get(rand.nextInt(mPurrSounds.size())));
@@ -398,6 +416,7 @@ public class GameFragment extends Fragment {
 
             k.performMovement();
 
+            // check the kitten's state
             if (k.getState() == Kitten.State.HOME) {
                 if (k.getScoreStyles().size() > 0) {
                     List<String> textLines = new ArrayList<>();
@@ -426,6 +445,9 @@ public class GameFragment extends Fragment {
         }
     }
 
+    /**
+     * Ends the game
+     */
     private void endGame(){
         mSoundBox.stop(backgroundID);
         if(soundOn) {
@@ -485,7 +507,7 @@ public class GameFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent result) {
-        if(requestCode == WelcomeActivity.REQUEST_CODE_OPTIONS) {
+        if(requestCode == WelcomeActivity.REQUEST_CODE_OPTIONS && result != null) {
             soundOn = result.getBooleanExtra(EXTRA_SOUND, true);
             musicOn = result.getBooleanExtra(EXTRA_MUSIC, true);
             if(musicOn) {

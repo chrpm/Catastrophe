@@ -8,9 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 /**
- * Created by Adrien on 2/8/2017.
+ * Used to host a single fragment
  */
-
 public abstract class SingleFragmentActivity extends AppCompatActivity {
     protected abstract Fragment createFragment();
     @Override

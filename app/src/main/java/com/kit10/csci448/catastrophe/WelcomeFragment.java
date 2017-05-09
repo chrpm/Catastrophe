@@ -17,17 +17,22 @@ import android.widget.ImageButton;
 import com.kit10.csci448.catastrophe.model.SoundBox;
 
 /**
- * Created by Adrien on 3/1/2017.
+ * The opening page for Catastrophe
  */
-
 public class WelcomeFragment extends Fragment {
 
     private ImageButton mStartButton;
     private static final String ARG_SOUND = "sound_on_id";
     private static final String ARG_MUSIC = "music_on_id";
-    public boolean sound;
-    public boolean music;
+    public boolean sound = true;
+    public boolean music = true;
 
+    /**
+     * Creates a new instance of the WelcomeFragment
+     * @param sound : whether the user wants sound
+     * @param music : whether the user wants music
+     * @return
+     */
     public static WelcomeFragment newInstance(boolean sound, boolean music) {
         Log.d(WelcomeActivity.LOG_TAG, "WelcomeFragment : new instance");
         Bundle args = new Bundle();

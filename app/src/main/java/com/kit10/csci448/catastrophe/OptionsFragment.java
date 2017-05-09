@@ -15,14 +15,8 @@ import android.widget.LinearLayout;
 import static android.app.Activity.RESULT_OK;
 
 /**
- * Created by Adrien on 3/1/2017.
+ * Used to set user-desired preferences
  */
-
-//To take screenshot onClickListener to overlay options onto paused game screen.
-//http://stackoverflow.com/questions/3733988/screen-capture-in-android
-
-    //Right now, sound and music are initially off.
-
 public class OptionsFragment extends Fragment {
 
     private static final String EXTRA_SOUND =
@@ -38,7 +32,6 @@ public class OptionsFragment extends Fragment {
     private Button mSoundOffButton;
     private Button mMusicOnButton;
     private Button mMusicOffButton;
-    private Button mQuitButton;
 
     private LinearLayout mSoundOnLayout;
     private LinearLayout mSoundOffLayout;
@@ -48,7 +41,11 @@ public class OptionsFragment extends Fragment {
     public boolean soundOn;
     public boolean musicOn;
 
-
+    /**
+     * Sets the result of user-preferences
+     * @param sound : whether the user wants sound
+     * @param music : whether the user wants music
+     */
     private void setAudioResult(boolean sound, boolean music) {
         Intent result = new Intent();
         result.putExtra(EXTRA_SOUND, sound);
@@ -56,6 +53,12 @@ public class OptionsFragment extends Fragment {
         getActivity().setResult(RESULT_OK, result);
     }
 
+    /**
+     * Used to create a new OptionsFragment
+     * @param sound : whether sound should be played
+     * @param music : whether music should be played
+     * @return
+     */
     public static OptionsFragment createFragment(boolean sound, boolean music) {
         Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : new instance");
 
@@ -150,17 +153,6 @@ public class OptionsFragment extends Fragment {
                 mMusicOffLayout.setVisibility(View.GONE);
                 mMusicOnLayout.setVisibility(View.VISIBLE);
                 musicOn = true;
-            }
-        });
-
-        mQuitButton = (Button) v.findViewById(R.id.quit_button);
-        mQuitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : quitting");
-                //android.os.Process.killProcess(android.os.Process.myPid());
-                //System.exit(1);
-                startActivityForResult(WelcomeActivity.newIntent(getActivity(), soundOn, musicOn), WelcomeActivity.REQUEST_CODE_GAME);
             }
         });
 

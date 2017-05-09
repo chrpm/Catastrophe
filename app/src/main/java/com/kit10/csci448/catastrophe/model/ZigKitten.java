@@ -5,9 +5,8 @@ import android.graphics.Bitmap;
 import java.util.Random;
 
 /**
- * Created by Adrien on 3/30/2017.
+ * Models a kittne that dashes side to side
  */
-
 public class ZigKitten extends TargetedKitten {
     public static final int DEFAULT_VARIABILITY = 1000;
     public static final double DEFAULT_PROBABILiTY = 0.025;
@@ -30,6 +29,9 @@ public class ZigKitten extends TargetedKitten {
         centerTargetX = targetX;
     }
 
+    /**
+     * Overrides parent method to provide special movement
+     */
     @Override
     public void flee() {
         if (new Random().nextDouble() <= zigProbability) {

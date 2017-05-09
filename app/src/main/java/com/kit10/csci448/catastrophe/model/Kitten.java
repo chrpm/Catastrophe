@@ -11,9 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Adrien on 3/1/2017.
+ * Models the kittens in the game
  */
-
 public class Kitten {
     public static final String TAG = "Kitten";
 
@@ -35,10 +34,16 @@ public class Kitten {
 
     private Bitmap sweetCatPic;
 
+    /**
+     * Movement state for the kittens
+     */
     public enum State {
       FLEEING, HELD, ESCAPED, HOME, LAUNCHED
     }
 
+    /**
+     * which noise to play
+     */
     public enum Noise {
         PURR, UPSET, MEOW, NONE, BOUNCE
     }
@@ -48,6 +53,9 @@ public class Kitten {
     private int numBounces = 0;
     private boolean backboardBounce = false;
 
+    /**
+     * Type of style used when scoring, includes point values
+     */
     public enum ScoreStyle {
         DROP ("Drop", 5), LAUNCH ("Launch", 10), BACKBOARD ("Backboard", 5), BOUNCE("Bounce", 5), DOUBLE_BOUNCE("Double-bounce!", 10), MULTI_BOUNCE("Multi-Bounce!!", 15), LAUNCH_N_CATCH("Launch 'n' Catch", 5);
 
@@ -89,6 +97,9 @@ public class Kitten {
         setVelocities();
     }
 
+    /**
+     * draws the kitten
+     */
     public void draw(Canvas canvas) {
         if(state == State.ESCAPED){
             return;
@@ -96,6 +107,9 @@ public class Kitten {
         canvas.drawBitmap(sweetCatPic, x - (sweetCatPic.getWidth() / 2), y - (sweetCatPic.getHeight() / 2), null);
     }
 
+    /**
+     * decides which movement scheme to use
+     */
     public void performMovement() {
         switch (state) {
             case FLEEING:
@@ -127,10 +141,16 @@ public class Kitten {
         }
     }
 
+    /**
+     * Increase the kitten's step size
+     */
     private void growStepSize() {
         stepSize *= 1 + stepSizeGrowth;
     }
 
+    /**
+     * Sets proper velocities based off position
+     */
     protected void setVelocities() {
         boolean bounce = false;
         if (x <= 0) {
@@ -154,10 +174,16 @@ public class Kitten {
         }
     }
 
+    /**
+     * controls fleeing movment
+     */
     public void flee() {
         move();
     }
 
+    /**
+     * controls launched movement
+     */
     public void launched() {
         move();
 
@@ -191,6 +217,9 @@ public class Kitten {
         }
     }
 
+    /**
+     * @return whether the cat is selected at the provided x and y
+     */
     public boolean selected(float eventX, float eventY) {
         if (eventX >= (x - sweetCatPic.getWidth() / 2) && (eventX <= (x + sweetCatPic.getWidth() / 2))) {
             if (eventY >= (y - sweetCatPic.getHeight() / 2) && (eventY <= (y + sweetCatPic.getHeight() / 2))) {
@@ -200,10 +229,16 @@ public class Kitten {
         return false;
     }
 
+    /**
+     * @return whether the cat is home
+     */
     public boolean atHome() {
         return (x <= home.rightX() && x >= home.leftX()) && (y <= home.bottomY() && y >= home.topY());
     }
 
+    /**
+     * Handle what happens when a cat is touched
+     */
     public void handleActionDown(float eventX, float eventY) {
         if (state == State.HOME) {
             return;
@@ -220,6 +255,9 @@ public class Kitten {
         }
     }
 
+    /**
+     * Handle what happens when a cat is released
+     */
     public void handleActionUp(float eventX, float eventY) {
         if (state == State.HELD) {
             // check if the kitten is inside the home box when dropped
@@ -236,6 +274,9 @@ public class Kitten {
         }
     }
 
+    /**
+     * Handle what happens when a cat is flung
+     */
     public void handleActionFlung(float eventX, float eventY, float velocityX, float velocityY) {
         if (selected(eventX, eventY) && (state == State.FLEEING || state == State.HELD)) {
             Log.d(TAG, "Kitten flung");
@@ -246,6 +287,9 @@ public class Kitten {
         }
     }
 
+    /**
+     * Clears the scoreStyles list and related attributes
+     */
     public void clearScoreStyles() {
         scoreStyles.clear();
         numBounces = 0;

@@ -9,9 +9,8 @@ import android.view.Window;
 import android.view.WindowManager;
 
 /**
- * Created by Adrien on 3/1/2017.
+ * Host the OptionsFragment
  */
-
 public class OptionsActivity extends SingleFragmentActivity {
 
     private static final String MUSIC_ON_ID =
@@ -26,7 +25,9 @@ public class OptionsActivity extends SingleFragmentActivity {
         super.onCreate(savedInstanceState);
     }
 
-
+    /**
+     * Used to create an explicit intent to launch the OptionsActivitiy
+     */
     public static Intent newIntent(Context packageContext, boolean sound, boolean music) {
         Log.d(WelcomeActivity.LOG_TAG, "OptionsActivity: new intent");
         Intent intent = new Intent(packageContext, OptionsActivity.class);
@@ -36,7 +37,9 @@ public class OptionsActivity extends SingleFragmentActivity {
     }
 
 
-
+    /**
+     * Creates an OptionsFragment
+     */
     @Override
     protected Fragment createFragment() {
         boolean sound = getIntent().getBooleanExtra(SOUND_ON_ID, true);

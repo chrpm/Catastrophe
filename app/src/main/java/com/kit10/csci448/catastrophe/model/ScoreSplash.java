@@ -13,9 +13,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Created by Adrien on 5/7/2017.
+ * Displays score animations and text
  */
-
 public class ScoreSplash {
     public static final int DRAW_TIME = 100;
     private static final int MAX_STARS = 20;
@@ -37,6 +36,10 @@ public class ScoreSplash {
     private float x;
     private float y;
 
+    /**
+     * @param splashPic : image asset for the splash background
+     * @param starPic : image asset for the star
+     */
     public ScoreSplash(Bitmap splashPic, Bitmap starPic) {
         this.splashPic = splashPic;
         this.starPic = starPic;
@@ -62,6 +65,9 @@ public class ScoreSplash {
         scorePaint.setColor(Color.YELLOW);
     }
 
+    /**
+     * Draws the ScoreSplash
+     */
     public void draw(Canvas canvas) {
         if (plusScore > 20) {
             canvas.drawBitmap(splashPic, x, y, null);
@@ -78,6 +84,9 @@ public class ScoreSplash {
         }
     }
 
+    /**
+     * Draws and animates the stars
+     */
     public void drawStars(Canvas canvas) {
         int starsDrawn = 0;
         for (Star star : stars) {
@@ -91,6 +100,9 @@ public class ScoreSplash {
         }
     }
 
+    /**
+     * Draws the text
+     */
     public void drawText(Canvas canvas) {
         float textX = 0;
         float textY = y + textPaint.getTextSize();
@@ -113,10 +125,16 @@ public class ScoreSplash {
         return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
+    /**
+     * @return whether or not to display the splashcscore
+     */
     public boolean drawing() {
         return drawing;
     }
 
+    /**
+     * Starts drawing the ScoreSplash
+     */
     public void startDrawing(List<String> textLines, int plusScore) {
         drawTime = DRAW_TIME;
         drawing = true;
@@ -132,6 +150,9 @@ public class ScoreSplash {
         Log.d("ScoreSplash", String.format("plusScore: %d, maxScore: %d, starsToDraw: %d", plusScore, Kitten.ScoreStyle.MAX_SCORE, starsToDraw));
     }
 
+    /**
+     * Animated stars that explode from the ScoreSplash
+     */
     private class Star {
         public static final float MAX_VELOCITY = 10f;
 

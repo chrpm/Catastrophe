@@ -9,9 +9,8 @@ import android.view.Window;
 import android.view.WindowManager;
 
 /**
- * Created by Adrien on 3/1/2017.
+ * Hosts the WelcomeFragment
  */
-
 public class WelcomeActivity extends SingleFragmentActivity {
     public static final String LOG_TAG = "Catastrophe";
     public static final String MUSIC_ON_ID =
@@ -29,14 +28,12 @@ public class WelcomeActivity extends SingleFragmentActivity {
         super.onCreate(savedInstanceState);
     }
 
-    public static Intent newIntent(Context packageContext) {
-        Log.d(WelcomeActivity.LOG_TAG, "WelcomeActivity: new intent");
-        Intent intent = new Intent(packageContext, WelcomeActivity.class);
-        intent.putExtra(MUSIC_ON_ID, true);
-        intent.putExtra(SOUND_ON_ID, true);
-        return intent;
-    }
-
+    /**
+     * Used to create an explicit intent to launch the welcome activitiy
+     * @param sound : whether the user wants sound
+     * @param music : whether the user wants music
+     * @return
+     */
     public static Intent newIntent(Context packageContext, boolean sound, boolean music) {
         Log.d(WelcomeActivity.LOG_TAG, "WelcomeActivity: new intent");
         Intent intent = new Intent(packageContext, WelcomeActivity.class);
@@ -45,6 +42,9 @@ public class WelcomeActivity extends SingleFragmentActivity {
         return intent;
     }
 
+    /**
+     * Creates a welcome fragment
+     */
     @Override
     protected Fragment createFragment() {
         boolean sound = (boolean) getIntent().getBooleanExtra(SOUND_ON_ID, true);

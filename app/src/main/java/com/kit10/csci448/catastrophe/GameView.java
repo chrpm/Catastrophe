@@ -17,7 +17,7 @@ import com.kit10.csci448.catastrophe.model.ScoreSplash;
 import java.util.List;
 
 /**
- * Created with help from JavaCodeGeeks CanvasView example
+ * Used to draw the game
  */
 public class GameView extends View {
     private static final String TAG = "GameView";
@@ -52,6 +52,9 @@ public class GameView extends View {
         mCanvas = new Canvas(mBitmap);
     }
 
+    /**
+     * Draws all of the game elements
+     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -64,10 +67,16 @@ public class GameView extends View {
         }
     }
 
+    /**
+     * Forces the screen to update
+     */
     public void update() {
         invalidate();
     }
 
+    /**
+     * Handles touch events
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         this.mDetector.onTouchEvent(event);
@@ -86,6 +95,9 @@ public class GameView extends View {
         return true;
     }
 
+    /**
+     * Sets pointers for the game pieces
+     */
     public void setGameResources(List<Kitten> kitties, ScoreSplash scoreSplash, Home home) {
         mKitties = kitties;
         mHome = home;
@@ -100,6 +112,9 @@ public class GameView extends View {
         this.mHome = mHome;
     }
 
+    /**
+     * Used to interpret more complex touch movements
+     */
     class GameGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final String GESTURE_TAG = "GameView.Gestures";
 
@@ -115,14 +130,9 @@ public class GameView extends View {
             return true;
         }
 
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent event) {
-            Log.d(GESTURE_TAG, "onSingleTapConfirmed: " + event.toString());
-            return true;
-        }
-
-
-
+        /**
+         * Interprets drags
+         */
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             Log.d(GESTURE_TAG,"onScroll");

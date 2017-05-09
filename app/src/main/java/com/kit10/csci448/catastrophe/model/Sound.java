@@ -1,9 +1,8 @@
 package com.kit10.csci448.catastrophe.model;
 
 /**
- * Created by ccollier on 5/3/2017.
+ * Models sound
  */
-
 public class Sound {
 
     private String mAssetPath;
