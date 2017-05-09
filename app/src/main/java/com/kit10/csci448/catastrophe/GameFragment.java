@@ -198,7 +198,7 @@ public class GameFragment extends Fragment {
             public void onClick(View v) {
                 mGameOverUI.setVisibility(View.GONE);
                 if(musicOn) {
-                    backgroundID = mSoundBox.playLoop(mBackgroundMusic);
+                    mSoundBox.resume(backgroundID);
                 }
 
                 // TODO: Start that new game

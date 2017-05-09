@@ -64,6 +64,9 @@ public class SoundBox {
 
     public void stop(int id) { mSoundPool.stop(id);}
 
+    public void resume(int id) { mSoundPool.resume(id);
+    }
+
 
     public List<Sound> getSounds() {
         return mSounds;
@@ -178,7 +181,7 @@ public class SoundBox {
             Log.e(TAG, "Could not load sound buzzer", ioe);
         }
         try {
-            bounce = new Sound("bounce.wav");
+            bounce = new Sound("splooge.wav");
             load(bounce);
         } catch (IOException ioe) {
             Log.e(TAG, "Could not load sound bounce", ioe);
