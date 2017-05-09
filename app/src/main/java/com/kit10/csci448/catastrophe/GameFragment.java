@@ -184,7 +184,7 @@ public class GameFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "WelcomeFragment : starting options");
-                mSoundBox.release();
+                mSoundBox.stop(backgroundID);
                 startActivityForResult(OptionsActivity.newIntent(getActivity()), WelcomeActivity.REQUEST_CODE_OPTIONS);
             }
         });
@@ -198,7 +198,7 @@ public class GameFragment extends Fragment {
             public void onClick(View v) {
                 mGameOverUI.setVisibility(View.GONE);
                 if(musicOn) {
-                    mSoundBox.resume(backgroundID);
+                    backgroundID = mSoundBox.playLoop(mBackgroundMusic);
                 }
 
                 // TODO: Start that new game
@@ -420,7 +420,7 @@ public class GameFragment extends Fragment {
     }
 
     private void endGame(){
-        mSoundBox.release();
+        mSoundBox.stop(backgroundID);
         gameIsRunning = false;
         mHandler.obtainMessage(2).sendToTarget();
 
