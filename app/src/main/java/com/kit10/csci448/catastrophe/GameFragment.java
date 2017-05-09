@@ -192,12 +192,7 @@ public class GameFragment extends Fragment {
                 Log.d(TAG, "WelcomeFragment : starting options");
                 mSoundBox.stop(backgroundID);
                 startActivityForResult(OptionsActivity.newIntent(getActivity(), soundOn, musicOn), WelcomeActivity.REQUEST_CODE_OPTIONS);
-                if(musicOn) {
-                    backgroundID = mSoundBox.playLoop(mBackgroundMusic);
-                }
-                else {
-                    mSoundBox.stop(backgroundID);
-                }
+
             }
         });
 
@@ -493,6 +488,10 @@ public class GameFragment extends Fragment {
         if(requestCode == WelcomeActivity.REQUEST_CODE_OPTIONS) {
             soundOn = result.getBooleanExtra(EXTRA_SOUND, true);
             musicOn = result.getBooleanExtra(EXTRA_MUSIC, true);
+            if(musicOn) {
+                backgroundID = mSoundBox.playLoop(mBackgroundMusic);
+            }
+
         }
     }
 
