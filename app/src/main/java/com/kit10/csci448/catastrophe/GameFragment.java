@@ -48,6 +48,7 @@ public class GameFragment extends Fragment {
     private List<Sound> mSounds;
     private List<Sound> mHappyShortSounds;
     private List<Sound> mPurrSounds;
+    private List<Sound> mUpsetSounds;
     public final double HOME_SIZE_PERCENTAGE = 0.3;
     public final int TIME_LIMIT_MINUTES = 5;
     public boolean soundOn;
@@ -60,6 +61,9 @@ public class GameFragment extends Fragment {
     private LinearLayout mPowerupToolbar;
     private LinearLayout mGameOverUI;
     private Button mRestartButton;
+    private Sound mBuzzer;
+    private Sound mBounce;
+    private int backgroundID;
 
     private Timer mTimer;
     public static Handler mHandler;
@@ -129,6 +133,9 @@ public class GameFragment extends Fragment {
         mPurrSounds = mSoundBox.getPurrSounds();
         mHappyShortSounds = mSoundBox.getShortHappySounds();
         mBackgroundMusic = mSoundBox.getBackgroundMusic();
+        mBuzzer = mSoundBox.getBuzzer();
+        mUpsetSounds = mSoundBox.getUpsetSounds();
+        mBounce = mSoundBox.getBounce();
 
         mGameView = (GameView) v.findViewById(R.id.canvas_view);
         mKitties = new ArrayList<>();
@@ -163,11 +170,8 @@ public class GameFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mStartButton.setVisibility(View.GONE); // makes the start button invisible
-                if(soundOn) {
-                    mSoundBox.play(mStartSound);
-                }
                 if(musicOn) {
-                    mSoundBox.playLoop(mBackgroundMusic);
+                    backgroundID = mSoundBox.playLoop(mBackgroundMusic);
                 }
 
                 // TODO: we may want to disable everything before this button is pressed (excluding the options button)
@@ -180,7 +184,7 @@ public class GameFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "WelcomeFragment : starting options");
-                mSoundBox.stop();
+                mSoundBox.release();
                 startActivityForResult(OptionsActivity.newIntent(getActivity()), WelcomeActivity.REQUEST_CODE_OPTIONS);
             }
         });
@@ -193,11 +197,8 @@ public class GameFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mGameOverUI.setVisibility(View.GONE);
-                if(soundOn) {
-                    mSoundBox.play(mStartSound);
-                }
                 if(musicOn) {
-                    mSoundBox.playLoop(mBackgroundMusic);
+                    backgroundID = mSoundBox.playLoop(mBackgroundMusic);
                 }
 
                 // TODO: Start that new game
@@ -344,9 +345,34 @@ public class GameFragment extends Fragment {
      */
     private void gameLoop() {
         randomFleeing();
-
+        Random rand = new Random();
         int kittensOnScreen = 0;
         for (Kitten k : mKitties) {
+            if(k.getState() == Kitten.State.FLEEING) {
+                mSoundBox.stop(k.getStreamID());
+                k.resetNoise();
+            }
+
+            if(soundOn) {
+                if(k.getNoise() == Kitten.Noise.PURR) {
+                    int i = mSoundBox.playLoop(mPurrSounds.get(rand.nextInt(mPurrSounds.size())));
+                    k.setStreamID(i);
+                    k.resetNoise();
+                }
+                else if(k.getNoise() == Kitten.Noise.UPSET) {
+                    mSoundBox.play(mUpsetSounds.get(rand.nextInt(mUpsetSounds.size())));
+                    k.resetNoise();
+                }
+
+                else if(k.getNoise() == Kitten.Noise.MEOW) {
+                    mSoundBox.play(mHappyShortSounds.get(rand.nextInt(mHappyShortSounds.size())));
+                    k.resetNoise();
+                }
+                else if(k.getNoise() == Kitten.Noise.BOUNCE) {
+                    mSoundBox.play(mBounce);
+                    k.resetNoise();
+                }
+            }
             int catHeight = k.getCatHeight();
             int catWidth = k.getCatWidth();
             int screenWidth = mGameView.getWidth();
@@ -383,6 +409,9 @@ public class GameFragment extends Fragment {
         // updates the UI
         if (gameIsRunning){
             if(kittensOnScreen == 0 || mTimeLimitExceeded){
+                if(soundOn) {
+                    mSoundBox.play(mBuzzer);
+                }
                 endGame();
             } else {
                 mHandler.obtainMessage(1).sendToTarget();
@@ -391,7 +420,7 @@ public class GameFragment extends Fragment {
     }
 
     private void endGame(){
-        mSoundBox.stop();
+        mSoundBox.release();
         gameIsRunning = false;
         mHandler.obtainMessage(2).sendToTarget();
 

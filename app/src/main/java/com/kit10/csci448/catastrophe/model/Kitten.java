@@ -28,6 +28,7 @@ public class Kitten {
     protected double velocityY;
 
     protected Home home;
+    private int streamID;
 
     protected double stepSize;
     protected double stepSizeGrowth;
@@ -37,7 +38,13 @@ public class Kitten {
     public enum State {
       FLEEING, HELD, ESCAPED, HOME, LAUNCHED
     }
+
+    public enum Noise {
+        PURR, UPSET, MEOW, NONE, BOUNCE
+    }
+
     protected State state = State.HOME;
+    protected Noise noise = Noise.PURR;
     private int numBounces = 0;
     private boolean backboardBounce = false;
 
@@ -143,6 +150,7 @@ public class Kitten {
 
         if (bounce) {
             numBounces++;
+            noise = Noise.BOUNCE;
         }
     }
 
@@ -178,6 +186,7 @@ public class Kitten {
             }
             else {
                 state = State.FLEEING;
+                noise = Noise.NONE;
             }
         }
     }
@@ -207,6 +216,7 @@ public class Kitten {
             }
             // Cat picture has been touched
             state = State.HELD;
+            noise = Noise.MEOW;
         }
     }
 
@@ -215,11 +225,13 @@ public class Kitten {
             // check if the kitten is inside the home box when dropped
             if (atHome()) {
                 state = State.HOME;
+                noise = Noise.PURR;
                 scoreStyles.add(ScoreStyle.DROP);
                 Log.d(TAG, "Kitten scored");
             }
             else {
                 state = State.FLEEING;
+                noise = Noise.NONE;
             }
         }
     }
@@ -228,6 +240,7 @@ public class Kitten {
         if (selected(eventX, eventY) && (state == State.FLEEING || state == State.HELD)) {
             Log.d(TAG, "Kitten flung");
             state = State.LAUNCHED;
+            noise = Noise.UPSET;
             this.velocityX = velocityX / 500;
             this.velocityY = velocityY / 500;
         }
@@ -298,4 +311,12 @@ public class Kitten {
     public List<ScoreStyle> getScoreStyles() {
         return scoreStyles;
     }
+
+    public Noise getNoise() {return noise;}
+
+    public void resetNoise() {noise = Noise.NONE;}
+
+    public void setStreamID(int id) {streamID = id;}
+
+    public int getStreamID() {return streamID;}
 }
