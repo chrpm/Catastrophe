@@ -192,6 +192,12 @@ public class GameFragment extends Fragment {
                 Log.d(TAG, "WelcomeFragment : starting options");
                 mSoundBox.stop(backgroundID);
                 startActivityForResult(OptionsActivity.newIntent(getActivity(), soundOn, musicOn), WelcomeActivity.REQUEST_CODE_OPTIONS);
+                if(musicOn) {
+                    backgroundID = mSoundBox.playLoop(mBackgroundMusic);
+                }
+                else {
+                    mSoundBox.stop(backgroundID);
+                }
             }
         });
 
@@ -355,18 +361,16 @@ public class GameFragment extends Fragment {
         Random rand = new Random();
         int kittensOnScreen = 0;
         for (Kitten k : mKitties) {
-            if(!soundOn) {
-                mSoundBox.stop(k.getStreamID());
-            }
             if(k.getState() == Kitten.State.FLEEING) {
-                mSoundBox.stop(k.getStreamID());
                 k.resetNoise();
+            }
+            if(!musicOn) {
+                mSoundBox.stop(backgroundID);
             }
 
             if(soundOn) {
                 if(k.getNoise() == Kitten.Noise.PURR) {
-                    int i = mSoundBox.playLoop(mPurrSounds.get(rand.nextInt(mPurrSounds.size())));
-                    k.setStreamID(i);
+                    mSoundBox.play(mPurrSounds.get(rand.nextInt(mPurrSounds.size())));
                     k.resetNoise();
                 }
                 else if(k.getNoise() == Kitten.Noise.UPSET) {
