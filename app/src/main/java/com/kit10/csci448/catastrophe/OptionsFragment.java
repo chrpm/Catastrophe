@@ -1,5 +1,6 @@
 package com.kit10.csci448.catastrophe;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * Created by Adrien on 3/1/2017.
  */
@@ -21,6 +24,14 @@ import android.widget.LinearLayout;
     //Right now, sound and music are initially off.
 
 public class OptionsFragment extends Fragment {
+
+    private static final String EXTRA_SOUND =
+            "com.kit10.csci448.catastrophe.sound_on_id";
+    private static final String EXTRA_MUSIC =
+            "com.kit10.csci448.catastrophe.music_on_id";
+    private static final String ARG_SOUND = "sound_on_id";
+    private static final String ARG_MUSIC = "music_on_id";
+
 
     private ImageButton mPlayButton;
     private Button mSoundOnButton;
@@ -38,11 +49,19 @@ public class OptionsFragment extends Fragment {
     public boolean musicOn;
 
 
+    private void setAudioResult(boolean sound, boolean music) {
+        Intent result = new Intent();
+        result.putExtra(EXTRA_SOUND, sound);
+        result.putExtra(EXTRA_MUSIC, music);
+        getActivity().setResult(RESULT_OK, result);
+    }
 
-    public static OptionsFragment createFragment() {
+    public static OptionsFragment createFragment(boolean sound, boolean music) {
         Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : new instance");
 
         Bundle args = new Bundle();
+        args.putBoolean(ARG_SOUND, sound);
+        args.putBoolean(ARG_MUSIC, music);
         OptionsFragment fragment = new OptionsFragment();
         fragment.setArguments(args);
         return fragment;
@@ -54,16 +73,38 @@ public class OptionsFragment extends Fragment {
         Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : onCreateView");
         View v = inflater.inflate(R.layout.options_fragment, container, false);
 
+
+
         mSoundOnLayout = (LinearLayout) v.findViewById(R.id.sound_on_layout);
         mSoundOffLayout = (LinearLayout) v.findViewById(R.id.sound_off_layout);
         mMusicOnLayout = (LinearLayout) v.findViewById(R.id.music_on_layout);
         mMusicOffLayout = (LinearLayout) v.findViewById(R.id.music_off_layout);
+
+        soundOn = getArguments().getBoolean(ARG_SOUND);
+        musicOn = getArguments().getBoolean(ARG_MUSIC);
+        if(soundOn) {
+            mSoundOnLayout.setVisibility(View.VISIBLE);
+            mSoundOffLayout.setVisibility(View.GONE);
+        }
+        else {
+            mSoundOnLayout.setVisibility(View.GONE);
+            mSoundOffLayout.setVisibility(View.VISIBLE);
+        }
+        if(musicOn) {
+            mMusicOnLayout.setVisibility(View.VISIBLE);
+            mMusicOffLayout.setVisibility(View.GONE);
+        }
+        else {
+            mMusicOnLayout.setVisibility(View.GONE);
+            mMusicOffLayout.setVisibility(View.VISIBLE);
+        }
 
         mPlayButton = (ImageButton) v.findViewById(R.id.play_button);
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(WelcomeActivity.LOG_TAG, "OptionsFragment : resuming game");
+                setAudioResult(soundOn, musicOn);
                 getActivity().finish();
             }
         });

@@ -1,6 +1,7 @@
 package com.kit10.csci448.catastrophe;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -40,6 +41,11 @@ public class GameFragment extends Fragment {
     public static final String TAG = "GameFragment";
     private static final String ARG_SOUND = "sound_on_id";
     private static final String ARG_MUSIC = "music_on_id";
+    public static final String EXTRA_MUSIC =
+            "com.kit10.csci448.catastrophe.music_on_id";
+    public static final String EXTRA_SOUND =
+            "com.kit10.csci448.catastrophe.sound_on_id";
+
 
     public int scoreMultiplier = 1;
 
@@ -185,7 +191,7 @@ public class GameFragment extends Fragment {
             public void onClick(View v) {
                 Log.d(TAG, "WelcomeFragment : starting options");
                 mSoundBox.stop(backgroundID);
-                startActivityForResult(OptionsActivity.newIntent(getActivity()), WelcomeActivity.REQUEST_CODE_OPTIONS);
+                startActivityForResult(OptionsActivity.newIntent(getActivity(), soundOn, musicOn), WelcomeActivity.REQUEST_CODE_OPTIONS);
             }
         });
 
@@ -197,6 +203,7 @@ public class GameFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mGameOverUI.setVisibility(View.GONE);
+                mGameView.update();
                 if(musicOn) {
                     backgroundID = mSoundBox.playLoop(mBackgroundMusic);
                 }
@@ -348,6 +355,9 @@ public class GameFragment extends Fragment {
         Random rand = new Random();
         int kittensOnScreen = 0;
         for (Kitten k : mKitties) {
+            if(!soundOn) {
+                mSoundBox.stop(k.getStreamID());
+            }
             if(k.getState() == Kitten.State.FLEEING) {
                 mSoundBox.stop(k.getStreamID());
                 k.resetNoise();
@@ -409,9 +419,7 @@ public class GameFragment extends Fragment {
         // updates the UI
         if (gameIsRunning){
             if(kittensOnScreen == 0 || mTimeLimitExceeded){
-                if(soundOn) {
-                    mSoundBox.play(mBuzzer);
-                }
+
                 endGame();
             } else {
                 mHandler.obtainMessage(1).sendToTarget();
@@ -421,6 +429,9 @@ public class GameFragment extends Fragment {
 
     private void endGame(){
         mSoundBox.stop(backgroundID);
+        if(soundOn) {
+            mSoundBox.play(mBuzzer);
+        }
         gameIsRunning = false;
         mHandler.obtainMessage(2).sendToTarget();
 
@@ -471,6 +482,14 @@ public class GameFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         mSoundBox.release();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent result) {
+        if(requestCode == WelcomeActivity.REQUEST_CODE_OPTIONS) {
+            soundOn = result.getBooleanExtra(EXTRA_SOUND, true);
+            musicOn = result.getBooleanExtra(EXTRA_MUSIC, true);
+        }
     }
 
 
