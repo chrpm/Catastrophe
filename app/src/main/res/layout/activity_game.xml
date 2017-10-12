@@ -4,7 +4,6 @@
     android:id="@+id/game_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
     android:background="#FFFFFF"
     android:orientation="vertical" >
     <com.kit10.csci448.catastrophe.GameView
@@ -17,11 +16,13 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="top|left"
+        android:padding="10dp"
         android:background="@drawable/options_gear"/>
     <Button
         android:id="@+id/start_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:textSize="40dp"
         android:layout_gravity="center"
         android:text="@string/start_button"/>
@@ -30,6 +31,7 @@
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:textSize="20dp"
         android:layout_gravity="top|right"
         tools:text="Time"/>
@@ -37,6 +39,7 @@
         android:id="@+id/powerup_toolbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:layout_gravity="left|center"
         android:orientation="vertical">
     </LinearLayout>
@@ -45,6 +48,7 @@
         android:id="@+id/remaining"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:textSize="20dp"
         android:layout_gravity="top|center"
         tools:text="Kittens Remaining"

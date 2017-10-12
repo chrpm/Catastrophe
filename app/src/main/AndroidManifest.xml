@@ -9,7 +9,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
         <activity android:name=".GameActivity"></activity>
-        <activity android:name=".WelcomeActivity" >
+        <activity android:name=".WelcomeActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation">>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

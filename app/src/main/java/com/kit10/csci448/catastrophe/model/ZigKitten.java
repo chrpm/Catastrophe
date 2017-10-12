@@ -8,7 +8,7 @@ import java.util.Random;
  * Created by Adrien on 3/30/2017.
  */
 
-public class ZigKitten extends Kitten {
+public class ZigKitten extends TargetedKitten {
     public static final int DEFAULT_VARIABILITY = 1000;
     public static final double DEFAULT_PROBABILiTY = 0.025;
 
@@ -22,8 +22,8 @@ public class ZigKitten extends Kitten {
      * @param zigVariability : defines the range on which the kitten zigzags
      * @param zigProbability : defines the likelihood off the kitten to zigzag per iteration
      */
-    public ZigKitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, Home home, double speed, double speedGrowth, int zigVariability, double zigProbability) {
-        super(sweetCatPic, x, y, targetX, targetY, home, speed, speedGrowth);
+    public ZigKitten(Bitmap sweetCatPic, int x, int y, int targetX, int targetY, Home home, double stepSize, double stepSizeGrowth, int zigVariability, double zigProbability) {
+        super(sweetCatPic, x, y, targetX, targetY, home, stepSize, stepSizeGrowth);
         zigLeft = new Random().nextBoolean();
         this.zigVariability = zigVariability;
         this.zigProbability = zigProbability;
@@ -31,7 +31,7 @@ public class ZigKitten extends Kitten {
     }
 
     @Override
-    public void move() {
+    public void flee() {
         if (new Random().nextDouble() <= zigProbability) {
             zigLeft = !zigLeft;
         }

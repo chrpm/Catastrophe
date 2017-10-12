@@ -1,11 +1,13 @@
 package com.kit10.csci448.catastrophe;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,10 @@ import android.widget.Toast;
 
 import com.kit10.csci448.catastrophe.model.Home;
 import com.kit10.csci448.catastrophe.model.Kitten;
+import com.kit10.csci448.catastrophe.model.ScoreSplash;
+import com.kit10.csci448.catastrophe.model.Sound;
+import com.kit10.csci448.catastrophe.model.SoundBox;
+import com.kit10.csci448.catastrophe.model.TargetedKitten;
 import com.kit10.csci448.catastrophe.model.ZigKitten;
 
 import java.util.ArrayList;
@@ -31,28 +37,35 @@ import java.util.TimerTask;
  */
 
 public class GameFragment extends Fragment {
+    public static final String TAG = "GameFragment";
+
+    private SoundBox mSoundBox;
+    private Sound mStartSound;
+    private List<Sound> mSounds;
+    private List<Sound> mHappyShortSounds;
+    private List<Sound> mPurrSounds;
+    public final double HOME_SIZE_PERCENTAGE = 0.3;
+
     private GameView mGameView;
     private ImageButton mOptionsButton;
     private Button mStartButton;
     private LinearLayout mPowerupToolbar;
-    private Boolean play;
-    private int kittensRemaining = 0;
-    private String string = "";
-    private String str = "";
 
     private Timer mTimer;
-    private TimerTask mTask;
-    public Handler mHandler;
-    private long startTime;
-    private long totalPlayTime = 0;
+    public static Handler mHandler;
     private TextView mTime;
-    private TextView mRemaining;
 
+    // game specific items
     private List<Kitten> mKitties;
+    private long totalPlayTime = 0;
+    private TextView mScore;
+    private int mScoreValue;
+
     private Home mHome;
+    private ScoreSplash mScoreSplash;
 
     public static GameFragment newInstance() {
-        Log.d(WelcomeActivity.LOG_TAG, "GameFragment : new instance");
+        Log.d(TAG, "GameFragment : new instance");
         Bundle args = new Bundle();
 
         GameFragment fragment = new GameFragment();
@@ -61,28 +74,68 @@ public class GameFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        mSoundBox = new SoundBox(getActivity());
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer.purge();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mTimer != null) {
+            resumeGame();
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(WelcomeActivity.LOG_TAG, "GameFragment : onCreateView");
+
+        Log.d(TAG, "GameFragment : onCreateView");
         super.onCreate(savedInstanceState);
         View v = inflater.inflate(R.layout.activity_game, container, false);
 
+        mStartSound = mSoundBox.getStartSound();
+        mPurrSounds = mSoundBox.getPurrSounds();
+        mHappyShortSounds = mSoundBox.getShortHappySounds();
+
         mGameView = (GameView) v.findViewById(R.id.canvas_view);
         mKitties = new ArrayList<>();
+
+        Bitmap splashPic = BitmapFactory.decodeResource(getResources(), R.drawable.kittensplash);
+        Bitmap starPic = BitmapFactory.decodeResource(getResources(), R.drawable.star);
+        mScoreSplash = new ScoreSplash(splashPic, starPic);
+
         Bitmap homePic = BitmapFactory.decodeResource(getResources(), R.drawable.home); // get the home image
-        /*
-        TODO: soft-code this line;
-        TODO: the home should be placed at the bottom center of the screen, regardless of hardware/screen size
-        TODO: the home's dimensions should reflect the size of the bitmap
-        */
-        mHome = new Home(homePic, new int[]{200,1200,1600,2000}); // home is represented as a rectangle: coordinate format is {left, right, top, bottom
-        mGameView.setGamePieces(mKitties, mHome);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenHeight = displayMetrics.heightPixels;
+        int screenWidth = displayMetrics.widthPixels;
+        Log.d("Height", Integer.toString(screenHeight));
+        Log.d("Width", Integer.toString(screenWidth));
+
+        double homeHeight = screenHeight - (screenHeight * HOME_SIZE_PERCENTAGE);
+        Log.d("Home Height", Integer.toString((int)homeHeight));
+        mHome = new Home(homePic, new int[]{0,(int)homeHeight,screenWidth,screenHeight}); // home is represented as a rectangle: coordinate format is {left, right, top, bottom
+
+        mGameView.setGameResources(mKitties, mScoreSplash, mHome);
+        mGameView.setBackgroundResource(R.drawable.wooden_floor);
 
         mTime = (TextView)v.findViewById(R.id.time);
         mTime.setText("Time: 0:00");
 
-        mRemaining = (TextView)v.findViewById(R.id.remaining);
-        mRemaining.setText("Kittens Remaining: 0");
+        mScore = (TextView)v.findViewById(R.id.remaining);
+        mScore.setText("Score: 0");
 
 
         mStartButton = (Button) v.findViewById(R.id.start_button);
@@ -90,35 +143,45 @@ public class GameFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mStartButton.setVisibility(View.GONE); // makes the start button invisible
+                mSoundBox.play(mStartSound);
                 // TODO: we may want to disable everything before this button is pressed (excluding the options button)
-                startGame();
+                startNewGame();
             }
         });
-        mHandler = new Handler() {
-             //the game is run on a different thread, so it has to send information to the UI thread through this handler
-            public void handleMessage(Message msg) {
-                //mTime.setText(getTime());
-                //mRemaining.setText(recountKitties());
-                mRemaining.setText(string);
-                mTime.setText(str);
-                mGameView.update();
-            }
-        };
 
         mOptionsButton = (ImageButton) v.findViewById(R.id.options_button);
         mOptionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(WelcomeActivity.LOG_TAG, "WelcomeFragment : starting options");
+                Log.d(TAG, "WelcomeFragment : starting options");
                 startActivityForResult(OptionsActivity.newIntent(getActivity()), WelcomeActivity.REQUEST_CODE_OPTIONS);
             }
         });
 
         mPowerupToolbar = (LinearLayout) v.findViewById(R.id.powerup_toolbar);
-        populatePowerupToolbar();
 
         return v;
     }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        getHandler();
+    }
+
+    public void getHandler() {
+        mHandler = new Handler() {
+            //the game is run on a different thread, so it has to send information to the UI thread through this handler
+            public void handleMessage(Message msg) {
+                mTime.setText(getTime());
+                mScore.setText(getActivity().getString(R.string.score, mScoreValue));
+                //mScore.setText(recountKitties());
+                //mScore.setText(Integer.toString(kittensRemaining));
+                mGameView.update();
+            }
+        };
+    }
+
 
     /**
      * Spawns powerups in the powerup toolbar and defines their functionality
@@ -144,9 +207,24 @@ public class GameFragment extends Fragment {
     /**
      * Starts the game on a new thread that is updated at a fixed rate
      */
-    private void startGame() {
-        mTimer = new Timer();
+    private void startNewGame() {
+        populatePowerupToolbar();
+
+        totalPlayTime = 0;
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer.purge();
+        }
+
+        mScoreValue = 0;
+        mKitties.clear();
         addNewKitties();
+
+        resumeGame();
+    }
+
+    private void resumeGame() {
+        mTimer = new Timer();
         int updateRate = 10; // update the game every 10 ms
         mTimer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
@@ -183,21 +261,19 @@ public class GameFragment extends Fragment {
     private void addNewKitties() {
         Random rand = new Random();
         Bitmap kittyPic = BitmapFactory.decodeResource(getResources(), R.drawable.cool_cat);
-        for (int i = 0; i < 1; i++) { // TODO: generate kittens on a per-level basis
+        for (int i = 0; i < 3; i++) { // TODO: generate kittens on a per-level basis
             int n = rand.nextBoolean() ? -1 : 1; // sets n to either 1 or -1
-            mKitties.add(new Kitten(kittyPic,
+            mKitties.add(new TargetedKitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
-                    700, 0,
+                    700, -1000,
                     mHome,
-                    Kitten.DEFAULT_SPEED, Kitten.DEFAULT_SPEED_GROWTH));
-            kittensRemaining++;
-            /*mKitties.add(new ZigKitten(kittyPic,
+                    Kitten.DEFAULT_STEP_SIZE, Kitten.DEFAULT_STEP_SIZE_GROWTH));
+            mKitties.add(new ZigKitten(kittyPic,
                     mHome.centerX() + n * rand.nextInt(mHome.width() / 2), mHome.centerY() + n * rand.nextInt(mHome.height() / 2),
-                    700, 0,
+                    700, -1000,
                     mHome,
-                    Kitten.DEFAULT_SPEED, Kitten.DEFAULT_SPEED_GROWTH,
+                    Kitten.DEFAULT_STEP_SIZE, Kitten.DEFAULT_STEP_SIZE_GROWTH,
                     ZigKitten.DEFAULT_VARIABILITY, ZigKitten.DEFAULT_PROBABILiTY));
-            kittensRemaining++;*/
         }
     }
 
@@ -207,48 +283,45 @@ public class GameFragment extends Fragment {
      */
     private void gameLoop() {
         randomFleeing();
-        string = "";
         for (Kitten k : mKitties) {
-            if((k.getY() + (k.getCatHeight() / 2)) < mGameView.getHeight() && (k.getY() - (k.getCatHeight() / 2)) > 0) {
-                if((k.getX() + (k.getCatWidth() / 2)) < mGameView.getWidth() && (k.getX() - (k.getCatWidth() / 2)) > 0) {
-                    k.setEntered();
-                }
-            }
-            string = new Integer(k.getHitsLeft()).toString();
-            if(k.hasEntered()) {
-                str = "ENTERED";
-            }
-            if (k.isFleeing()) {
-                k.flee();
-            }
-            if(k.getHitsLeft() > 0 && k.hasEntered()) {
-                if((k.getY() - (k.getCatHeight() / 2)) <= 0 || (k.getY() + (k.getCatHeight() / 2)) >= mGameView.getHeight()) {
-                    k.setTargetY(k.getOldY());
-                    k.setTargetX(k.getTargetX() - k.getOldX() + k.getTargetX());
-                    k.hit();
-                }
-                else if((k.getX() - (k.getCatWidth() / 2)) <= 0 || (k.getX() + (k.getCatWidth() / 2)) >= mGameView.getWidth()) {
-                    k.setTargetX(k.getOldX());
-                    k.setTargetY(k.getTargetY() - k.getOldY() + k.getTargetY());
-                    k.hit();
-                }
-            }
-            else if(k.getHitsLeft() <= 0){
-                if((k.getY() + (k.getCatHeight() / 2)) <= 0 || (k.getY() - (k.getCatHeight() / 2)) >= mGameView.getHeight()) {
-                    k.setEscaped(true);
-                    k.setFleeing(false);
+            int catHeight = k.getCatHeight();
+            int catWidth = k.getCatWidth();
+            int screenWidth = mGameView.getWidth();
+            int screenHeight = mGameView.getHeight();
+            float catX = k.getX();
+            float catY = k.getY();
 
+            //Find if the kitten is on the game screen.
+            if((catY + (catHeight / 2) > 0) && (catY - (catHeight / 2) < screenHeight)) {
+                if((catX + (catWidth / 2) > 0) && (catX - (catWidth / 2) < screenWidth)) {
+                    // k.setOnScreen(true);
+                    //string = "On Screen";
                 }
-                if((k.getX() + (k.getCatWidth() / 2)) <= 0 || (k.getX() - (k.getCatWidth() / 2)) >= mGameView.getWidth()) {
-                    k.setEscaped(true);
-                    k.setFleeing(false);
-
+                else {
+                    // k.setOnScreen(false);
+                    //string = "Not On Screen";
                 }
-
+            }
+            else {
+                // k.setOnScreen(false);
+                //string = "Not On Screen";
             }
 
-            if (k.isScored()) {
-                // TODO: update the UI
+            k.performMovement();
+
+            if (k.getState() == Kitten.State.HOME) {
+                if (k.getScoreStyles().size() > 0) {
+                    List<String> textLines = new ArrayList<>();
+                    int plusScore = 0 ;
+                    for (Kitten.ScoreStyle ss : k.getScoreStyles()) {
+                        Log.d(TAG, "Score style: " + ss);
+                        textLines.add(ss.toString());
+                        plusScore += ss.getPointValue();
+                    }
+                    mScoreValue += plusScore;
+                    mScoreSplash.startDrawing(textLines, plusScore);
+                }
+                k.clearScoreStyles();
             }
         }
 
@@ -263,8 +336,8 @@ public class GameFragment extends Fragment {
         double fleeProbability = 0.005;
         Random rand = new Random();
         for (Kitten k : mKitties) {
-            if (rand.nextDouble() <= fleeProbability) {
-                k.setFleeing(true);
+            if ((k.getState() == Kitten.State.HOME) && rand.nextDouble() <= fleeProbability) {
+                k.setState(Kitten.State.FLEEING);
             }
         }
     }
@@ -282,15 +355,70 @@ public class GameFragment extends Fragment {
     }
 
     public String recountKitties() {
+        int count = 0;
         for(Kitten k : mKitties) {
-
-            if(k.isEscaped()) {
-                mKitties.remove(k);
-            }
+            /* if(k.onScreen()) {
+                count++;
+            }*/
         }
 
-        kittensRemaining = mKitties.size();
-        String remaining = "Kittens Remaining: " + kittensRemaining;
+        String num = new Integer(count).toString();
+        String remaining = "Kittens Remaining: " + num;
         return remaining;
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mSoundBox.release();
+    }
+
+    /*private class SoundHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private Button mButton;
+        private Sound mSound;
+
+        public SoundHolder(LayoutInflater inflater, ViewGroup container) {
+            super(inflater.inflate(R.layout.list_item_sound, container, false));
+            mButton = (Button)itemView.findViewById(R.id.button);
+            mButton.setOnClickListener(this);
+        }
+
+        public void bindSound(Sound sound) {
+            mSound = sound;
+            mButton.setText(mSound.getName());
+        }
+
+        @Override
+        public void onClick(View v) {
+            mBeatBox.play(mSound);
+        }
+    }
+
+    private class SoundAdapter extends RecyclerView.Adapter<SoundHolder> {
+        private List<Sound> mSounds;
+
+        public SoundAdapter(List<Sound> sounds) {
+            mSounds = sounds;
+        }
+
+        @Override
+        public SoundHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(getActivity());
+            return new SoundHolder(inflater, parent);
+        }
+
+        @Override
+        public void onBindViewHolder(SoundHolder soundHolder, int position) {
+            Sound sound = mSounds.get(position);
+            soundHolder.bindSound(sound);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mSounds.size();
+        }
+    }*/
+
+
+
 }
